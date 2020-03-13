@@ -188,6 +188,17 @@ public:
 
     }
 
+    void stergere_mijloc_poz(Nod* p)
+    {
+        ///p, r (de sters), t
+        Nod* r = p -> getNext(); /// nodul de sters
+        Nod* t = r -> getNext();
+
+        p -> setNext(t);
+        /// delete r;
+
+    }
+
     void stergere(int data)
     {
         if(prim -> getInfo() == data)
@@ -254,7 +265,35 @@ public:
     void golire_lista(int k)
     {
         int nr = nr_noduri();
-        Nod* p = prim;
+
+        if(k == 1)
+        {
+            while(nr != 0)
+            {
+                cout << prim -> getInfo() << " ";
+                stergere_inceput();
+                nr--;
+            }
+        }
+
+        else
+        {
+            Nod* p = new Nod();
+            int cnt = 0;
+
+            for(p = prim; nr != 0; p = p -> getNext())
+            {
+                cnt++;
+                if(cnt == k - 1)
+                {
+                    cnt = 0;
+                    cout << (p -> getNext()) -> getInfo() << " ";
+                    stergere_mijloc_poz(p);
+                    /// caz ultimul nod
+                    nr--;
+                }
+            }
+        }
 
 
     }
@@ -282,10 +321,12 @@ int main()
       l.stergere_inceput(1);
     */
     l.stergere(7);
-   // l.inversare_legaturi();
+    l.inserare_final(7);
+    l.inserare_final(8);
+    // l.inversare_legaturi();
     l.iterareLista();
-    cout << l.nr_noduri();
-
+    //cout << l.nr_noduri();
+    l.golire_lista(1);
 
 
     return 0;
