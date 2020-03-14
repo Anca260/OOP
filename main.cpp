@@ -211,17 +211,54 @@ public:
 
         if(prim == ultim)
         {
-            cout << prim -> getInfo() << " ";
+            cout << "{ " << prim -> getInfo() << " }";
             return;
         }
 
+        cout << "{ ";
         Nod* curr = prim;
         while(curr -> getNext() != prim)
         {
-            cout << curr -> getInfo() << " ";
+            cout << curr -> getInfo() << " -> ";
             curr = curr -> getNext();
         }
-        cout << ultim -> getInfo() << " ";
+        cout << ultim -> getInfo() << " -> " << prim -> getInfo() << " }";
+    }
+
+
+
+    void inversare_legaturi()
+    {
+        if(prim == NULL)
+            cout << "LISTA VIDA!";
+        else if(prim == ultim)
+            cout << "LISTA NESCHIMBATA";
+        else
+        {
+            ///transformam lista circulara in lista simpla
+            ultim -> setNext(NULL);
+
+            ///schimbam legaturile
+            Nod* temp = prim;
+            Nod* ante = new Nod();
+            Nod* post = new Nod();
+
+            while(temp != NULL)
+            {
+                post = temp -> getNext();
+                temp -> setNext(ante);
+                ante = temp;
+                temp = post;
+            }
+            prim = ante;
+
+            ///transformam lista simpla in lista circulara
+            Nod* p = new Nod();
+            for( p = prim; (p -> getNext()) -> getNext() != NULL; p = p -> getNext() );
+            p -> setNext(prim);
+            ultim = p;
+
+        }
     }
 
 };
@@ -245,6 +282,14 @@ int main()
     cout << "\n\n\n";
     l.inserare_pozitie(1, 8);
     l.stergere_pozitie(2);
+    l.iterareLista();
+    cout << "\n\n\n";
+    l.inversare_legaturi();
+    l.iterareLista();
+    cout << "\n\n\n";
+    l.stergere_pozitie(2);
+    l.stergere_pozitie(2);
+   // l.stergere_pozitie(1);
     l.iterareLista();
 
     return 0;
