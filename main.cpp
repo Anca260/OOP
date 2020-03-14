@@ -45,6 +45,7 @@ public:
     }
 };
 
+
 class ListaCirculara
 {
 private:
@@ -73,13 +74,13 @@ private:
 
 
 
-
 public:
     ListaCirculara()
     {
         prim = NULL;
         ultim = NULL;
     }
+
 
     ///functie care insereaza un element pe o anumita pozitie
     void inserare_pozitie(int poz, int data)
@@ -129,6 +130,14 @@ public:
 
         }
     }
+
+
+    ///supraincarcarea operatorului >>
+    /*istream & operator>>(istream & in, ListaCirculara & lc)
+    {
+        lc.inserare(1, in);
+        return in;
+    }*/
 
 
 
@@ -294,20 +303,40 @@ public:
         }
     }
 
+
+    ///supraincarcarea operatorului + care efectueaza concatenarea a doua liste
+    friend ListaCirculara operator+(const ListaCirculara &lc1, const ListaCirculara &lc2)
+    {
+        ListaCirculara lc3;
+        int i = 1;
+
+        Nod* curr = new Nod();
+        for(curr = lc1.prim; curr != lc1.ultim; curr = curr -> getNext())
+        {
+            lc3.inserare_pozitie(i, curr -> getInfo());
+            i++;
+        }
+        lc3.inserare_pozitie(i, lc1.ultim -> getInfo());
+        i++;
+
+
+        for(curr = lc2.prim; curr != lc2.ultim; curr = curr -> getNext())
+        {
+            lc3.inserare_pozitie(i, curr -> getInfo());
+            i++;
+        }
+        lc3.inserare_pozitie(i, lc2.ultim -> getInfo());
+
+
+        return lc3;
+    }
+
 };
 
 
 int main()
 {
-    ListaCirculara l;
-    l.inserare_pozitie(1, 3);
-    l.inserare_pozitie(2, 4);
-    l.inserare_pozitie(3, 5);
-    l.inserare_pozitie(1, 1);
-    l.inserare_pozitie(2, 2);
-    l.iterareLista();
-    cout << "\n\n\n";
-    l.golire_lista(5);
+    ListaCirculara lc;
 
     return 0;
 }
