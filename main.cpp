@@ -226,7 +226,7 @@ public:
     }
 
 
-
+    ///functie care inverseaza legaturile unei liste
     void inversare_legaturi()
     {
         if(prim == NULL)
@@ -261,36 +261,53 @@ public:
         }
     }
 
+
+
+    ///functie care elimina elementele listei din k in k, pana la golirea ei
+    void golire_lista(int k)
+    {
+        Nod* curr = new Nod();
+        int cnt = 0, poz = 0;
+        int nr = nr_noduri();
+
+        curr = prim;
+        while(nr != 0)
+        {
+            cnt++;
+            if(curr == prim)
+                poz = 0;
+
+            poz = poz + 1;
+
+            if(cnt == k)
+            {
+                cnt = 0;
+                cout << curr -> getInfo() << " ";
+                curr = curr -> getNext();
+                stergere_pozitie(poz);
+                nr--;
+                poz--;
+            }
+
+            else if(cnt != k && prim != ultim)
+                curr = curr -> getNext();
+        }
+    }
+
 };
 
 
 int main()
 {
     ListaCirculara l;
+    l.inserare_pozitie(1, 3);
+    l.inserare_pozitie(2, 4);
+    l.inserare_pozitie(3, 5);
     l.inserare_pozitie(1, 1);
     l.inserare_pozitie(2, 2);
-    l.inserare_pozitie(3, 3);
-    l.inserare_pozitie(1, 4);
-    l.inserare_pozitie(2, 5);
     l.iterareLista();
     cout << "\n\n\n";
-    l.stergere_pozitie(1);
-    l.iterareLista();
-    cout << "\n\n\n";
-    l.stergere_pozitie(4);
-    l.iterareLista();
-    cout << "\n\n\n";
-    l.inserare_pozitie(1, 8);
-    l.stergere_pozitie(2);
-    l.iterareLista();
-    cout << "\n\n\n";
-    l.inversare_legaturi();
-    l.iterareLista();
-    cout << "\n\n\n";
-    l.stergere_pozitie(2);
-    l.stergere_pozitie(2);
-   // l.stergere_pozitie(1);
-    l.iterareLista();
+    l.golire_lista(5);
 
     return 0;
 }
