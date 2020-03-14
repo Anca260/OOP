@@ -73,6 +73,48 @@ private:
     }
 
 
+    ///functie care citeste elementele si le introduce in lista
+    void citire(istream & in)
+    {
+        cout << "Introduceti numarul de noduri de adaugat in lista: ";
+        int nr;
+        in >> nr;
+
+        cout << "\nIntroduceti cele " << nr << " valori ale nodurilor: \n";
+        int cnt, val;
+        for(cnt = 1; cnt <= nr; cnt++)
+        {
+            in >> val;
+            inserare_pozitie(cnt, val);
+        }
+
+    }
+
+    ///functie care afiseaza lista
+    void iterareLista(ostream & out)
+    {
+        if(prim == NULL)
+        {
+            out << "\nLISTA VIDA!";
+            return;
+        }
+
+        if(prim == ultim)
+        {
+            out << "\nLista este: { " << prim -> getInfo() << " }";
+            return;
+        }
+
+        out << "\nLista este: { ";
+        Nod* curr = prim;
+        while(curr -> getNext() != prim)
+        {
+            out << curr -> getInfo() << " -> ";
+            curr = curr -> getNext();
+        }
+        out << ultim -> getInfo() << " -> " << prim -> getInfo() << " }";
+    }
+
 
 public:
     ListaCirculara()
@@ -88,7 +130,7 @@ public:
         int nr = nr_noduri();
         if(poz > nr + 1)
         {
-            cout << "Valoarea introdusa ca pozitie este incorecta.\n";
+            cout << "\nValoarea introdusa ca pozitie este incorecta.\n";
             return;
         }
 
@@ -133,11 +175,11 @@ public:
 
 
     ///supraincarcarea operatorului >>
-    /*istream & operator>>(istream & in, ListaCirculara & lc)
+    friend istream & operator >> (istream & in, ListaCirculara & lc)
     {
-        lc.inserare(1, in);
+        lc.citire(in);
         return in;
-    }*/
+    }
 
 
 
@@ -147,7 +189,7 @@ public:
         int nr = nr_noduri();
         if(poz > nr)
         {
-            cout << "Valoarea introdusa ca pozitie este incorecta.\n";
+            cout << "\nValoarea introdusa ca pozitie este incorecta.\n";
             return;
         }
 
@@ -156,7 +198,7 @@ public:
         {
             if(prim == NULL)
             {
-                cout << "LISTA VIDA!";
+                cout << "\nLISTA VIDA!";
             }
             else if (prim == ultim)
             {
@@ -209,39 +251,21 @@ public:
     }
 
 
-    ///functie care afiseaza lista
-    void iterareLista()
-    {
-        if(prim == NULL)
+    ///supraincarcarea operatorului << pentru afisarea listei
+    friend ostream & operator << (ostream & out, ListaCirculara & lc)
         {
-            cout << "LISTA VIDA!\n";
-            return;
+            lc.iterareLista(out);
+            return out;
         }
-
-        if(prim == ultim)
-        {
-            cout << "{ " << prim -> getInfo() << " }";
-            return;
-        }
-
-        cout << "{ ";
-        Nod* curr = prim;
-        while(curr -> getNext() != prim)
-        {
-            cout << curr -> getInfo() << " -> ";
-            curr = curr -> getNext();
-        }
-        cout << ultim -> getInfo() << " -> " << prim -> getInfo() << " }";
-    }
 
 
     ///functie care inverseaza legaturile unei liste
     void inversare_legaturi()
     {
         if(prim == NULL)
-            cout << "LISTA VIDA!";
+            cout << "\nLISTA VIDA!";
         else if(prim == ultim)
-            cout << "LISTA NESCHIMBATA";
+            cout << "\nLISTA NESCHIMBATA";
         else
         {
             ///transformam lista circulara in lista simpla
@@ -280,6 +304,7 @@ public:
         int nr = nr_noduri();
 
         curr = prim;
+        cout << "\n";
         while(nr != 0)
         {
             cnt++;
@@ -337,6 +362,13 @@ public:
 int main()
 {
     ListaCirculara lc;
+  //  lc.inserare_pozitie(1, 1);
+    //lc.inserare_pozitie(2, 2);
+    //lc.inserare_pozitie(3, 3);
+    cin >> lc;
+    cout << lc;
+
+    //lc.golire_lista(3);
 
     return 0;
 }
