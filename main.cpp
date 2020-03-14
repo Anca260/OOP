@@ -41,7 +41,7 @@ public:
     }
     ~Nod()
     {
-        delete next;
+
     }
 };
 
@@ -51,199 +51,8 @@ private:
     Nod* prim;
     Nod* ultim;
 
-public:
-    ListaCirculara()
-    {
-        prim = NULL;
-        ultim = NULL;
-    }///constructor lista
 
-    void inserare_final(int data)
-    {
-        if(prim == NULL)
-        {
-            prim = new Nod(data);
-            ultim = prim;
-        }
-        else
-        {
-            Nod* temp = new Nod(data, prim);
-            ultim -> setNext(temp);
-            ultim = temp;
-        }
-    }
-
-    void inserare_inceput(int data)
-    {
-        if(prim == NULL)
-        {
-            prim = new Nod(data, prim);
-            ultim = prim;
-        }
-        else
-        {
-            Nod* temp = new Nod(data, prim);
-            prim = temp;
-            ultim -> setNext(prim);
-        }
-    }
-
-
-    Nod* cautare_valoare(int data)
-    {
-        Nod* p = new Nod();
-        for( p = prim; p -> getNext() != prim &&  p -> getInfo() != data; p = p -> getNext() );
-        /// p este nodul cu valoarea "data"
-
-        return p;
-    }
-
-
-    void inserare_mijloc(int data_p, int data_temp) ///inserare dupa nodul cu valoarea "data"
-    {
-        Nod* p = cautare_valoare(data_p);
-        /// p este nodul cu valoarea "data_p"
-
-        ///inseram nodul temp dupa nodul p
-        Nod* temp = new Nod(data_temp, p -> getNext());
-        p -> setNext(temp);
-    }
-
-
-    void iterareLista()
-    {
-        if(prim == NULL)
-        {
-            cout << "LISTA VIDA!\n";
-            return;
-        }
-
-        Nod* curr = prim;
-        do
-        {
-            cout << curr -> getInfo() << "\n";
-            curr = curr -> getNext();
-        }
-        while(curr != prim);
-
-    }
-
-    void stergere_inceput()
-    {
-        if(prim == NULL)
-        {
-            cout << "LISTA VIDA!";
-        }
-        else if(prim == ultim)
-        {
-            prim = NULL;
-            ultim = NULL;
-            delete prim;
-        }
-        else
-        {
-            Nod* temp = prim -> getNext();
-            ultim -> setNext(temp);
-            /// !!! delete prim + destructor;
-            prim = temp;
-        }
-
-    }
-
-    Nod* cautare_pozitie(Nod* r)
-    {
-        Nod* p = new Nod();
-        for( p = prim; p -> getNext() != prim && p -> getNext() != r; p = p -> getNext() );
-        /// p este predecesorul nodului r ( p -> next = r)
-
-        return p;
-    }
-
-
-    void stergere_final()
-    {
-        ///p, ultim, prim
-
-        Nod* p = cautare_pozitie(ultim);
-        ///p este penultimul element din lista
-
-        p -> setNext(prim);
-        ///delete ultim
-        ultim = p;
-    }
-
-
-    void stergere_mijloc(int data)
-    {
-        Nod* p = new Nod();
-        for( p = prim -> getNext(); p -> getNext() != prim && (p -> getNext()) -> getInfo() != data; p = p -> getNext() );
-        /// p este predecesorul nodului cu valoarea "data"
-
-        ///p, r (de sters), t
-        Nod* r = p -> getNext(); /// nodul cu valoarea "data" (nodul de sters)
-        Nod* t = r -> getNext();
-
-        p -> setNext(t);
-        /// delete r;
-
-    }
-
-    void stergere_mijloc_poz(Nod* p)
-    {
-        ///p, r (de sters), t
-        Nod* r = p -> getNext(); /// nodul de sters
-        Nod* t = r -> getNext();
-
-        p -> setNext(t);
-        /// delete r;
-
-    }
-
-    void stergere(int data)
-    {
-        if(prim -> getInfo() == data)
-            stergere_inceput();
-        else if(ultim -> getInfo() == data)
-            stergere_final();
-        else
-            stergere_mijloc(data);
-    }
-
-    void inversare_legaturi()
-    {
-        if(prim == NULL)
-            cout << "LISTA VIDA!";
-        else if(prim == ultim)
-            cout << "LISTA NESCHIMBATA";
-        else
-        {
-            ///transformam lista circulara in lista simpla
-            ultim -> setNext(NULL);
-
-            ///schimbam legaturile
-            Nod* temp = prim;
-            Nod* ant = new Nod();
-            Nod* post = new Nod();
-
-            while(temp != NULL)
-            {
-                post = temp -> getNext();
-                temp -> setNext(ant);
-                ant = temp;
-                temp = post;
-            }
-            prim = ant;
-
-            ///transformam lista simpla in lista circulara
-            Nod* p = new Nod();
-            for( p = prim; (p -> getNext()) -> getNext() != NULL; p = p -> getNext() );
-            p -> setNext(prim);
-            ultim = p;
-
-        }
-    }
-
-
+    ///functie care returneaza numarul de noduri al listei
     int nr_noduri()
     {
         if(prim == NULL)
@@ -262,40 +71,86 @@ public:
         }
     }
 
-    void golire_lista(int k)
+
+public:
+    ListaCirculara()
+    {
+        prim = NULL;
+        ultim = NULL;
+    }
+
+
+    void inserare_pozitie(int poz, int data)
     {
         int nr = nr_noduri();
-
-        if(k == 1)
+        if(poz > nr + 1)
         {
-            while(nr != 0)
+            cout << "Nu sunt suficiente elemente in lista";
+            return;
+        }
+
+        if(poz == 1) ///inserarea unui element la inceputul listei
+        {
+            if(prim == NULL)
             {
-                cout << prim -> getInfo() << " ";
-                stergere_inceput();
-                nr--;
+                prim = new Nod(data, prim);
+                ultim = prim;
+            }
+            else
+            {
+                Nod* aux = new Nod(data, prim);
+                prim = aux;
+                ultim -> setNext(prim);
             }
         }
 
-        else
+        else if(poz == nr + 1) ///inserare unui element la finalul listei
         {
+            Nod* aux = new Nod(data, prim);
+            ultim -> setNext(aux);
+            ultim = aux;
+        }
+
+        else ///inserarea unui element in interiorul listei
+        {
+            int cnt = 1;
             Nod* p = new Nod();
-            int cnt = 0;
-
-            for(p = prim; nr != 0; p = p -> getNext())
+            p = prim;
+            while( p -> getNext() != prim && cnt != poz - 1)
             {
+                p = p -> getNext();
                 cnt++;
-                if(cnt == k - 1)
-                {
-                    cnt = 0;
-                    cout << (p -> getNext()) -> getInfo() << " ";
-                    stergere_mijloc_poz(p);
-                    /// caz ultimul nod
-                    nr--;
-                }
             }
+
+            Nod* aux = new Nod(data, p -> getNext());
+            p -> setNext(aux);
+
+        }
+    }
+
+
+    ///functie care afiseaza lista
+    void iterareLista()
+    {
+        if(prim == NULL)
+        {
+            cout << "LISTA VIDA!\n";
+            return;
         }
 
+        if(prim == ultim)
+        {
+            cout << prim -> getInfo() << " ";
+            return;
+        }
 
+        Nod* curr = prim;
+        while(curr -> getNext() != prim)
+        {
+            cout << curr -> getInfo() << " ";
+            curr = curr -> getNext();
+        }
+        cout << ultim -> getInfo() << " ";
     }
 
 };
@@ -304,30 +159,13 @@ public:
 int main()
 {
     ListaCirculara l;
-    l.inserare_inceput(3);
-    l.inserare_final(4);
-    l.inserare_final(6);
-    l.inserare_final(7);
-    l.inserare_inceput(2);
-    l.inserare_inceput(1);
-    l.inserare_mijloc(4, 5);
-
-
-    /*  l.inserare_mijloc(4, 5);
-      l.iterareLista();
-      l.inserare_inceput(1);
-      l.inserare_final(2);
-      l.inserare_final(3);
-      l.stergere_inceput(1);
-    */
-    l.stergere(7);
-    l.inserare_final(7);
-    l.inserare_final(8);
-    // l.inversare_legaturi();
+    l.inserare_pozitie(1, 1);
+    l.inserare_pozitie(2, 2);
+    l.inserare_pozitie(3, 3);
+    l.inserare_pozitie(1, 4);
+    l.inserare_pozitie(2, 5);
+    // cout << l.nr_noduri() << "\n\n\n";
     l.iterareLista();
-    //cout << l.nr_noduri();
-    l.golire_lista(1);
-
 
     return 0;
 }
