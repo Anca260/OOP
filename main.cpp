@@ -72,6 +72,8 @@ private:
     }
 
 
+
+
 public:
     ListaCirculara()
     {
@@ -79,13 +81,13 @@ public:
         ultim = NULL;
     }
 
-
+    ///functie care insereaza un element pe o anumita pozitie
     void inserare_pozitie(int poz, int data)
     {
         int nr = nr_noduri();
         if(poz > nr + 1)
         {
-            cout << "Nu sunt suficiente elemente in lista";
+            cout << "Valoarea introdusa ca pozitie este incorecta.\n";
             return;
         }
 
@@ -129,6 +131,75 @@ public:
     }
 
 
+
+    ///functie care efectueaza stergerea unui element de pe o anumita pozitie
+    void stergere_pozitie(int poz)
+    {
+        int nr = nr_noduri();
+        if(poz > nr)
+        {
+            cout << "Valoarea introdusa ca pozitie este incorecta.\n";
+            return;
+        }
+
+
+        if(poz == 1) ///stergerea primului element al listei
+        {
+            if(prim == NULL)
+            {
+                cout << "LISTA VIDA!";
+            }
+            else if (prim == ultim)
+            {
+                delete prim;
+                prim = NULL;
+                ultim = NULL;
+            }
+            else
+            {
+                Nod* temp = prim;
+                ultim->setNext(temp->getNext());
+                prim = temp -> getNext();
+                delete temp;
+            }
+        }
+
+        else if(poz == nr) ///stergerea uktimului element al listei
+        {
+            ///determinam predecesorul ultimului nod al listei
+            Nod* ante = new Nod();
+            for( ante = prim; ante -> getNext() != ultim; ante = ante -> getNext() );
+
+            ante -> setNext(prim);
+            delete ultim;
+            ultim = ante;
+        }
+
+        else ///stergerea unui element din interiorul listei
+        {
+            ///determinam nodul de pe pozitia "poz - 1"
+            Nod* ante = new Nod();
+            ante = prim;
+            int cnt = 1;
+            while(cnt != poz - 1)
+            {
+                ante = ante -> getNext();
+                cnt++;
+            }
+
+            Nod* curr = new Nod();
+            Nod* post = new Nod();
+            curr = ante -> getNext();
+            post = curr -> getNext();
+
+            ante -> setNext(post);
+            delete curr;
+
+
+        }
+    }
+
+
     ///functie care afiseaza lista
     void iterareLista()
     {
@@ -164,7 +235,16 @@ int main()
     l.inserare_pozitie(3, 3);
     l.inserare_pozitie(1, 4);
     l.inserare_pozitie(2, 5);
-    // cout << l.nr_noduri() << "\n\n\n";
+    l.iterareLista();
+    cout << "\n\n\n";
+    l.stergere_pozitie(1);
+    l.iterareLista();
+    cout << "\n\n\n";
+    l.stergere_pozitie(4);
+    l.iterareLista();
+    cout << "\n\n\n";
+    l.inserare_pozitie(1, 8);
+    l.stergere_pozitie(2);
     l.iterareLista();
 
     return 0;
