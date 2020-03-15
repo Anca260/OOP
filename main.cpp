@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -80,12 +81,15 @@ private:
         int nr;
         in >> nr;
 
-        cout << "\nIntroduceti cele " << nr << " valori ale nodurilor: \n";
-        int cnt, val;
-        for(cnt = 1; cnt <= nr; cnt++)
+        if(nr > 0)
         {
-            in >> val;
-            inserare_pozitie(cnt, val);
+            cout << "Introduceti cele " << nr << " valori ale nodurilor: ";
+            int cnt, val;
+            for(cnt = 1; cnt <= nr; cnt++)
+            {
+                in >> val;
+                inserare_pozitie(cnt, val);
+            }
         }
 
     }
@@ -95,24 +99,24 @@ private:
     {
         if(prim == NULL)
         {
-            out << "\nLISTA VIDA!";
+            out << "Lista curenta este vida.\n";
             return;
         }
 
         if(prim == ultim)
         {
-            out << "\nLista este: { " << prim -> getInfo() << " }";
+            out << "Lista este: { " << prim -> getInfo() << " }\n";
             return;
         }
 
-        out << "\nLista este: { ";
+        out << "Lista este: { ";
         Nod* curr = prim;
         while(curr -> getNext() != prim)
         {
             out << curr -> getInfo() << " -> ";
             curr = curr -> getNext();
         }
-        out << ultim -> getInfo() << " -> " << prim -> getInfo() << " }";
+        out << ultim -> getInfo() << " -> " << prim -> getInfo() << " }\n";
     }
 
 
@@ -130,7 +134,7 @@ public:
         int nr = nr_noduri();
         if(poz > nr + 1)
         {
-            cout << "\nValoarea introdusa ca pozitie este incorecta.\n";
+            cout << "Valoarea introdusa ca pozitie este incorecta.\n";
             return;
         }
 
@@ -186,10 +190,16 @@ public:
     ///functie care efectueaza stergerea unui element de pe o anumita pozitie
     void stergere_pozitie(int poz)
     {
+        if(prim == NULL)
+        {
+            cout << "Nu se poate efectua stergerea.\n";
+            return;
+        }
+
         int nr = nr_noduri();
         if(poz > nr)
         {
-            cout << "\nValoarea introdusa ca pozitie este incorecta.\n";
+            cout << "Valoarea introdusa ca pozitie este incorecta.\n";
             return;
         }
 
@@ -198,7 +208,7 @@ public:
         {
             if(prim == NULL)
             {
-                cout << "\nLISTA VIDA!";
+                cout << "Lista curenta este vida!\n";
             }
             else if (prim == ultim)
             {
@@ -215,7 +225,7 @@ public:
             }
         }
 
-        else if(poz == nr) ///stergerea uktimului element al listei
+        else if(poz == nr) ///stergerea ultimului element al listei
         {
             ///determinam predecesorul ultimului nod al listei
             Nod* ante = new Nod();
@@ -253,21 +263,23 @@ public:
 
     ///supraincarcarea operatorului << pentru afisarea listei
     friend ostream & operator << (ostream & out, ListaCirculara & lc)
-        {
-            lc.iterareLista(out);
-            return out;
-        }
+    {
+        lc.iterareLista(out);
+        return out;
+    }
 
 
     ///functie care inverseaza legaturile unei liste
     void inversare_legaturi()
     {
         if(prim == NULL)
-            cout << "\nLISTA VIDA!";
+            cout << "Nu se poate efectua inversarea legaturilor.\n";
         else if(prim == ultim)
-            cout << "\nLISTA NESCHIMBATA";
+            cout << "Lista ramane neschimbata\n";
         else
         {
+            cout << "Inversam legaturile listei.\n";
+
             ///transformam lista circulara in lista simpla
             ultim -> setNext(NULL);
 
@@ -304,7 +316,13 @@ public:
         int nr = nr_noduri();
 
         curr = prim;
-        cout << "\n";
+        if(prim == NULL)
+        {
+            cout << "Nu se poate efectua operatia.\n";
+            return;
+        }
+
+        cout << "Elementele se elimina in urmatoarea ordine: ";
         while(nr != 0)
         {
             cnt++;
@@ -316,10 +334,14 @@ public:
             if(cnt == k)
             {
                 cnt = 0;
-                cout << curr -> getInfo() << " ";
+                cout << curr -> getInfo();
                 curr = curr -> getNext();
                 stergere_pozitie(poz);
                 nr--;
+                if(nr != 0)
+                    cout << " , ";
+                else
+                    cout << ".";
                 poz--;
             }
 
@@ -332,6 +354,17 @@ public:
     ///supraincarcarea operatorului + care efectueaza concatenarea a doua liste
     friend ListaCirculara operator+(const ListaCirculara &lc1, const ListaCirculara &lc2)
     {
+        /* if(lc1.prim == NULL && lc2.prim == NULL)
+         {
+             return;
+         }*/
+
+        if(lc2.prim == NULL)
+            return lc1;
+
+        if(lc1.prim == NULL)
+            return lc2;
+
         ListaCirculara lc3;
         int i = 1;
 
@@ -359,16 +392,138 @@ public:
 };
 
 
+void menu_output()
+{
+    cout << "\n Anca Grupa 211 - Proiect 1 - Nume proiect: Clasa Lista_circulara (implementata dinamic) \n";
+    cout << "\n\t MENIU:";
+    cout << "\n===========================================\n";
+    cout << "\n";
+    cout << "1. Crearea listei \n";
+    cout << "2. Inserarea unui element pe o anumita pozitie a listei \n";
+    cout << "3. Stergerea unui element de pe o anumita pozitie din lista \n";
+    cout << "4. Inversarea legaturilor listei \n";
+    cout << "5. Eliminarea elementelor listei circulare din k in k pana la golirea acesteia \n";
+    cout << "6. Afisare lista curenta \n";
+    cout << "7. Concatenarea a doua liste circulare \n";
+    cout << "0. Iesire. \n";
+}
+
+void menu(ListaCirculara lc)
+{
+    int option;  ///optiunea aleasa din meniu
+    option = 0;
+    int ok = 0;
+
+    do
+    {
+        menu_output();
+
+        cout << "\nIntroduceti numarul actiunii: ";
+        cin >> option;
+
+        if (option == 1)
+        {
+            if(ok == 0)
+            {
+                ok = 1;
+                cin >> lc;
+                cout << lc;
+            }
+            else
+            {
+                cout << "Lista a fost deja creata. \n";
+                cout << "Puteti alege optiunea 2: inserare element in lista.";
+            }
+        }
+        if (option == 2)
+        {
+            cout << lc;
+
+            cout << "Introduceti valoarea nodului de inserat in lista: ";
+            int val;
+            cin >> val;
+
+            cout << "Introduceti pozitia pe care sa fie inserat acest nod: ";
+            int poz;
+            cin >> poz;
+
+            lc.inserare_pozitie(poz, val);
+            cout << lc;
+        }
+
+        if (option == 3)
+        {
+            cout << lc;
+
+            cout << "Stergeti pozitia de care sa fie sters nodul: ";
+            int poz;
+            cin >> poz;
+
+            lc.stergere_pozitie(poz);
+            cout << lc;
+        }
+
+        if (option == 4)
+        {
+            cout << lc;
+            lc.inversare_legaturi();
+            cout << lc;
+        }
+
+        if (option == 5)
+        {
+            cout << lc;
+
+            int k;
+            cout << "Introduceti valoarea parametrului k: ";
+            cin >> k;
+
+            lc.golire_lista(k);
+            ok = 0;
+        }
+
+        if(option == 6)
+        {
+            cout << lc;
+        }
+
+        if(option == 7)
+        {
+            ListaCirculara lc1, lc2;
+            cout << "--- Prima lista (lista curenta) ---\n";
+            cout << lc;
+
+            cout << "--- A doua lista ---\n";
+            cin >> lc2;
+            cout << lc2;
+
+            cout << "--- Lista finala ---\n";
+            lc = lc + lc2;
+            cout << lc;
+            cout << "\nOBSERVATIE: Lista intitulata -Lista finala- va fi cea utilizata la apelarea altor optiuni din meniu.\n";
+        }
+
+        if (option == 0)
+        {
+            cout << "\nEXIT!\n";
+        }
+
+        if (option < 0 || option > 7)
+        {
+            cout << "\nSelectie invalida\n";
+        }
+
+        cout << "\n";
+        system("pause"); ///Pauza - Press any key to continue...
+        system("cls");   ///Sterge continutul curent al consolei
+    }
+    while(option != 0);
+}
+
 int main()
 {
     ListaCirculara lc;
-  //  lc.inserare_pozitie(1, 1);
-    //lc.inserare_pozitie(2, 2);
-    //lc.inserare_pozitie(3, 3);
-    cin >> lc;
-    cout << lc;
-
-    //lc.golire_lista(3);
-
+    menu(lc);
     return 0;
 }
+
