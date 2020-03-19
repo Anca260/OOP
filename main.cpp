@@ -1,3 +1,5 @@
+///Tema 6: Clasa "Lista circulara" (implementata dinamic)
+
 #include <iostream>
 #include <cstdlib>
 
@@ -398,23 +400,26 @@ public:
     }
 
 
-    /*~ListaCirculara()
+    ~ListaCirculara()
     {
         Nod* p = new Nod();
-        while(prim != NULL)
+        p = prim;
+
+        while(p != NULL)
         {
-            p = prim;
-            prim = prim -> getNext();
+            Nod* aux = new Nod();
+            aux = p -> getNext();
             delete p;
+            p = aux;
         }
-    }*/
+    }
 
 };
 
 
 void menu_output()
 {
-    cout << "\n Anca Grupa 211 - Proiect 1 - Nume proiect: Clasa Lista_circulara (implementata dinamic) \n";
+    cout << "\n Nita Anca, Grupa 211 - Proiect 1 - Nume proiect: Clasa Lista_circulara (implementata dinamic) \n";
     cout << "\n\t MENIU:";
     cout << "\n===========================================\n";
     cout << "\n";
