@@ -351,6 +351,14 @@ public:
     }
 
 
+    ///functie pentru citire, memorare si afisare
+    void functie(ListaCirculara lc)
+    {
+        cin >> lc;
+        cout << lc;
+    }
+
+
     ///supraincarcarea operatorului + care efectueaza concatenarea a doua liste
     friend ListaCirculara operator+(const ListaCirculara &lc1, const ListaCirculara &lc2)
     {
@@ -388,6 +396,18 @@ public:
 
         return lc3;
     }
+
+
+    /*~ListaCirculara()
+    {
+        Nod* p = new Nod();
+        while(prim != NULL)
+        {
+            p = prim;
+            prim = prim -> getNext();
+            delete p;
+        }
+    }*/
 
 };
 
@@ -526,4 +546,3 @@ int main()
     menu(lc);
     return 0;
 }
-
