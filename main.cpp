@@ -67,7 +67,7 @@ private:
         else
         {
             int cnt = 0;
-            Nod* p = new Nod();
+            Nod* p = prim;
             for( p = prim; p -> getNext() != prim; p = p -> getNext() )
                 cnt++;
 
@@ -166,8 +166,8 @@ public:
         else ///inserarea unui element in interiorul listei
         {
             int cnt = 1;
-            Nod* p = new Nod();
-            p = prim;
+            Nod* p = prim;
+
             while( p -> getNext() != prim && cnt != poz - 1)
             {
                 p = p -> getNext();
@@ -231,7 +231,7 @@ public:
         else if(poz == nr) ///stergerea ultimului element al listei
         {
             ///determinam predecesorul ultimului nod al listei
-            Nod* ante = new Nod();
+            Nod* ante = prim;
             for( ante = prim; ante -> getNext() != ultim; ante = ante -> getNext() );
 
             ante -> setNext(prim);
@@ -242,8 +242,7 @@ public:
         else ///stergerea unui element din interiorul listei
         {
             ///determinam nodul de pe pozitia "poz - 1"
-            Nod* ante = new Nod();
-            ante = prim;
+            Nod* ante = prim;
             int cnt = 1;
             while(cnt != poz - 1)
             {
@@ -251,10 +250,8 @@ public:
                 cnt++;
             }
 
-            Nod* curr = new Nod();
-            Nod* post = new Nod();
-            curr = ante -> getNext();
-            post = curr -> getNext();
+            Nod* curr = ante -> getNext();
+            Nod* post = curr -> getNext();
 
             ante -> setNext(post);
             delete curr;
@@ -301,7 +298,7 @@ public:
             prim = ante;
 
             ///transformam lista simpla in lista circulara
-            Nod* p = new Nod();
+            Nod* p = prim;
             for( p = prim; (p -> getNext()) -> getNext() != NULL; p = p -> getNext() );
             p -> setNext(prim);
             ultim = p;
@@ -314,11 +311,10 @@ public:
     ///functie care elimina elementele listei din k in k, pana la golirea ei
     void golire_lista(int k)
     {
-        Nod* curr = new Nod();
         int cnt = 0, poz = 0;
         int nr = nr_noduri();
 
-        curr = prim;
+        Nod* curr = prim;
         if(prim == NULL)
         {
             cout << "Nu se poate efectua operatia.\n";
@@ -365,11 +361,6 @@ public:
     ///supraincarcarea operatorului + care efectueaza concatenarea a doua liste
     friend ListaCirculara operator+(const ListaCirculara &lc1, const ListaCirculara &lc2)
     {
-        /* if(lc1.prim == NULL && lc2.prim == NULL)
-         {
-             return;
-         }*/
-
         if(lc2.prim == NULL)
             return lc1;
 
@@ -403,16 +394,23 @@ public:
 
     ~ListaCirculara()
     {
-        Nod* p = new Nod();
-        p = prim;
-
-        while(p != NULL)
+        Nod* p = prim;
+        if(p == ultim)
         {
-            Nod* aux = new Nod();
-            aux = p -> getNext();
+            delete p;
+            return;
+        }
+
+        do
+        {
+            Nod* aux = p -> getNext();
             delete p;
             p = aux;
         }
+        while(p != ultim);
+
+        delete p;
+
     }
 
 };
