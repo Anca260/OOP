@@ -1,0 +1,336 @@
+#include <iostream>
+
+using namespace std;
+
+class Nod
+{
+protected:
+    int info;
+    Nod* next;
+public:
+    Nod();
+    Nod(int);
+    Nod(int, Nod*);
+    Nod(const Nod* (&nod2));
+    virtual ~Nod();
+
+    int getInfo();
+    Nod* getNext();
+    void setInfo(int);
+    void setNext(Nod*);
+};
+
+Nod::Nod()
+{
+    ///this -> info = 0;
+    this -> next = NULL;
+}
+Nod::Nod(int info)
+{
+    this -> info = info;
+    this -> next = NULL;
+}
+Nod::Nod(int info, Nod* next)
+{
+    this -> info = info;
+    this -> next = next;
+}
+Nod::Nod(const Nod* (&n2) )
+{
+    //info = n2.info;
+    //next = n2.next;
+    //info = n2 -> getInfo();
+    //cout<<"Copy constructor called "<<endl;
+}
+Nod::~Nod()
+{
+
+}
+int Nod::getInfo()
+{
+    return info;
+}
+Nod* Nod::getNext()
+{
+    return next;
+}
+void Nod::setInfo(int info)
+{
+    this -> info = info;
+}
+void Nod::setNext(Nod* next)
+{
+    this -> next = next;
+}
+
+
+class Nod_dublu:public Nod
+{
+private:
+    Nod* ante;
+
+public:
+    Nod_dublu();
+    Nod_dublu(int);
+    Nod_dublu(int, Nod*);
+    Nod_dublu(int, Nod*, Nod*);
+    ~Nod_dublu();
+
+    Nod* getAnte();
+    void setAnte(Nod*);
+};
+
+Nod_dublu::Nod_dublu()
+{
+    this -> ante = NULL;
+}
+Nod_dublu::Nod_dublu(int info):Nod(info)
+{
+    this -> ante = NULL;
+}
+Nod_dublu::Nod_dublu(int info, Nod* next):Nod(info, next)
+{
+    this -> ante = NULL;
+}
+Nod_dublu::Nod_dublu(int info, Nod* next, Nod* ante):Nod(info, next)
+{
+    this -> ante = ante;
+}
+Nod_dublu::~Nod_dublu()
+{
+
+}
+Nod* Nod_dublu::getAnte()
+{
+    return ante;
+}
+void Nod_dublu::setAnte(Nod* ante)
+{
+    this -> ante = ante;
+}
+
+
+class Lista
+{
+protected:
+    Nod_dublu* prim;
+    Nod_dublu* ultim;
+
+public:
+    Lista();
+    //Lista(int);
+    virtual ~Lista();
+
+    void inserare_final(int);
+    void inserare_pozitie(int, int, int);
+    void stergere_pozitie(int, int);
+    void afisare();
+};
+
+Lista::Lista()
+{
+    prim = NULL;
+    ultim = NULL;
+}
+Lista::~Lista()
+{
+    Nod_dublu* p = prim;
+    if(p == ultim)
+    {
+        delete p;
+        return;
+    }
+
+    do
+    {
+        Nod_dublu* aux;
+        aux = (Nod_dublu*) p -> getNext();
+        delete p;
+        p = aux;
+    }
+    while(p != ultim);
+
+    delete p;
+}
+
+void Lista::inserare_final(int info)
+{
+    if(prim == NULL)
+    {
+        prim = new Nod_dublu(info);
+        ultim = prim;
+    }
+    else
+    {
+        Nod_dublu* aux = new Nod_dublu(info);
+        ultim -> setNext(aux);
+        aux -> setAnte(ultim);
+        ultim = aux;
+    }
+}
+void Lista::inserare_pozitie(int poz, int data, int n)
+{
+    if(poz > n + 1)
+    {
+        cout << "Valoarea introdusa ca pozitie este incorecta.\n";
+        return;
+    }
+
+    if(poz == 1) ///inserarea unui element la inceputul listei
+    {
+        if(prim == NULL)
+            prim = new Nod_dublu(data);
+        else
+        {
+            Nod_dublu* aux = new Nod_dublu(data, prim);
+            prim = aux;
+        }
+    }
+    else if(poz == n + 1) {}
+    // inserare_final(data);
+    else
+    {
+        int cnt = 1;
+        Nod_dublu* p = prim;
+        while(cnt != poz - 1)
+        {
+            p = (Nod_dublu*) p -> getNext();
+            cnt++;
+        }
+
+        Nod_dublu* urm = (Nod_dublu*) p -> getNext();
+        Nod_dublu* aux = new Nod_dublu(data, urm, p);
+        urm -> setAnte(aux);
+        p -> setNext(aux);
+    }
+}
+void Lista::stergere_pozitie(int poz, int n)
+{
+    if(prim == NULL)
+    {
+        cout << "Nu se poate efectua stergerea.\n";
+        return;
+    }
+    if(poz > n)
+    {
+        cout << "Valoarea introdusa ca pozitie este incorecta.\n";
+        return;
+    }
+
+    if(poz == 1) ///stergerea primului element al listei
+    {
+        if (prim == ultim)
+        {
+            delete prim;
+            prim = NULL;
+            ultim = NULL;
+        }
+        else
+        {
+            Nod_dublu* aux;
+            aux = (Nod_dublu*) prim -> getNext();
+            prim = aux;
+            prim -> setAnte(NULL);
+        }
+    }
+    else if(poz == n) ///stergerea ultimului element al listei
+    {
+        Nod_dublu* pred;
+        pred = (Nod_dublu*)ultim -> getAnte();
+        delete ultim;
+        ultim = pred;
+        ultim -> setNext(NULL);
+    }
+    else ///stergerea unui element din interiorul listei
+    {
+        int cnt = 1;
+        Nod_dublu* p = prim;
+        while(cnt != poz)
+        {
+            p = (Nod_dublu*) p -> getNext();
+            cnt++;
+        }
+
+        Nod_dublu* pred;
+        pred = (Nod_dublu*) p -> getAnte();
+        Nod_dublu* succ;
+        succ = (Nod_dublu*) p -> getNext();
+
+        pred -> setNext(succ);
+        succ -> setAnte(pred);
+        delete p;
+    }
+}
+void Lista::afisare()
+{
+    Nod_dublu* p = prim;
+    while(p != ultim)
+    {
+        cout << p -> getInfo() << " ";
+        cout << p -> getAnte() << " ";
+        cout << p -> getNext() << " \n";
+        p = (Nod_dublu*) p -> getNext();
+    }
+    cout << p -> getInfo() << " ";
+    cout << p -> getAnte() << " ";
+    cout << p -> getNext() << " \n";
+}
+
+class Lista_Circulara:public Lista
+{
+private:
+    // Lista ld;
+public:
+    Lista_Circulara();
+    ~Lista_Circulara();
+
+    void inserare_final(int);
+    void afisare();
+};
+
+Lista_Circulara::Lista_Circulara():Lista() {};
+Lista_Circulara::~Lista_Circulara() {};
+void Lista_Circulara::inserare_final(int info)
+{
+    Lista::inserare_final(info);
+    ultim -> setNext(prim);
+    prim -> setAnte(ultim);
+}
+void Lista_Circulara::afisare()
+{
+    Lista::afisare();
+    cout << prim -> getInfo() << " ";
+    cout << prim -> getAnte() << " ";
+    cout << prim -> getNext() << " \n";
+}
+
+int main()
+{
+    /*  Nod_dublu* n1 = new Nod_dublu(1);
+      Nod_dublu* n2 = new Nod_dublu(2, n2);
+      Nod_dublu* n3 = new Nod_dublu(3, n1, n2);
+      cout << n2 -> getInfo();
+      */
+    /*Lista lc;
+    lc.inserare_final(1);
+    lc.inserare_final(2);
+    lc.inserare_final(3);
+    lc.inserare_final(5);
+    lc.afisare();
+    // cout << n;
+    /* lc.inserare_pozitie(2, 2, 2);
+     lc.inserare_pozitie(3, 3, 3);
+    cout << "\n";
+    //lc.stergere_pozitie(1, 3);
+    lc.afisare();*/
+    {
+        Lista_Circulara* lc = new Lista_Circulara();
+        lc->inserare_final(1);
+        lc->inserare_final(2);
+        lc->afisare();
+        delete lc;
+    }
+    //    lc->inserare_sfarsit(2);
+    cout << "HEI";
+    return 0;
+}
