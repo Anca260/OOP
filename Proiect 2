@@ -18,10 +18,8 @@ public:
     Nod* getNext();
     void setInfo(int);
     void setNext(Nod*);
-    void citire(istream &in);
-    void afisare(ostream &out);
-//    friend istream& operator >>(istream& in, Nod n){n -> citire(in); return in;};
-  //  friend istream& operator <<(ostream&, Nod){n -> afisare(out); return out;};
+    friend istream& operator >>(istream&, Nod&);
+    friend ostream& operator <<(ostream&, Nod&);
 };
 
 Nod::Nod()
@@ -41,10 +39,8 @@ Nod::Nod(int info, Nod* next)
 }
 Nod::Nod(const Nod& n2)
 {
-    //info = n2.info;
-    //next = n2.next;
-    //info = n2 -> getInfo();
-    cout<<"Copy constructor called "<<endl;
+    this -> info = n2.info;
+    this -> next = n2.next;
 }
 Nod::~Nod()
 {
@@ -66,27 +62,16 @@ void Nod::setNext(Nod* next)
 {
     this -> next = next;
 }
-void Nod::citire(istream &in)
+istream& operator >>(istream& in, Nod& n)
 {
-    int val;
-    in >> val;
-    info = val;
-    next = NULL;
-}
-void Nod::afisare(ostream &out)
-{
-    out << info;
-}/*
-friend istream& operator >>(istream& in, Nod& n)
-{
-    n.citire(in);
+    in >> n.info;
     return in;
 }
-friend istream& operator <<(ostream& out, Nod& n)
+ostream& operator <<(ostream& out, Nod& n)
 {
-    n.afisare(out);
+    out << n.info;
     return out;
-}*/
+}
 
 
 class Nod_dublu:public Nod
@@ -99,6 +84,7 @@ public:
     Nod_dublu(int);
     Nod_dublu(int, Nod*);
     Nod_dublu(int, Nod*, Nod*);
+    Nod_dublu(const Nod_dublu& nod2);
     ~Nod_dublu();
 
     Nod* getAnte();
@@ -120,6 +106,10 @@ Nod_dublu::Nod_dublu(int info, Nod* next):Nod(info, next)
 Nod_dublu::Nod_dublu(int info, Nod* next, Nod* ante):Nod(info, next)
 {
     this -> ante = ante;
+}
+Nod_dublu::Nod_dublu(const Nod_dublu& n2):Nod(n2)
+{
+    this -> ante = n2.ante;
 }
 Nod_dublu::~Nod_dublu()
 {
@@ -150,9 +140,10 @@ public:
     void inserare_final(int);
     void inserare_pozitie(int, int, int);
     void stergere_pozitie(int, int);
-    void citire(istream &);
-    friend istream & operator >> (istream &in, Lista &ld){ ld.citire(in); return in;};
-    void afisare();
+    virtual void citire(istream &);
+    virtual void afisare(ostream &);
+    friend istream & operator >> (istream &, Lista &);
+    friend ostream & operator << (ostream &, Lista &);
 };
 
 Lista::Lista()
@@ -314,19 +305,29 @@ void Lista::citire(istream& in)
     in >> val;
     inserare_final(val);
 }
-void Lista::afisare()
+void Lista::afisare(ostream& out)
 {
     Nod_dublu* p = prim;
     while(p != ultim)
     {
-        cout << p -> getInfo() << " ";
-        cout << p -> getAnte() << " ";
-        cout << p -> getNext() << " \n";
+        out << p -> getInfo() << " ";
+        out << p -> getAnte() << " ";
+        out << p -> getNext() << " \n";
         p = (Nod_dublu*) p -> getNext();
     }
-    cout << p -> getInfo() << " ";
-    cout << p -> getAnte() << " ";
-    cout << p -> getNext() << " \n";
+    out << p -> getInfo() << " ";
+    out << p -> getAnte() << " ";
+    out << p -> getNext() << " \n";
+}
+istream & operator >> (istream &in, Lista &lc)
+{
+    lc.citire(in);
+    return in;
+}
+ostream & operator << (ostream &out, Lista &lc)
+{
+    lc.afisare(out);
+    return out;
 }
 
 class Lista_Circulara:public Lista
@@ -342,7 +343,10 @@ public:
     void inserare_final(int);
     void inserare_pozitie(int, int, int);
     void stergere_pozitie(int, int);
-    void afisare();
+    void citire(istream&);
+    void afisare(ostream&);
+    friend istream & operator >> (istream &, Lista_Circulara &);
+    friend ostream & operator << (ostream &, Lista_Circulara &);
     int josephus(int, int);
 };
 
@@ -384,13 +388,31 @@ void Lista_Circulara::stergere_pozitie(int poz, int n)
         prim -> setAnte(ultim);
     }
 }
-void Lista_Circulara::afisare()
+void Lista_Circulara::citire(istream& in)
 {
-    Lista::afisare();
+    Lista::citire(in);
+    ultim -> setNext(prim);
+    prim -> setAnte(ultim);
+}
+void Lista_Circulara::afisare(ostream& out)
+{
+    Lista::afisare(out);
+    ultim -> setNext(prim);
+    prim -> setAnte(ultim);
     cout << prim -> getInfo() << " ";
     cout << prim -> getAnte() << " ";
     cout << prim -> getNext() << " \n";
 }
+istream & operator >> (istream &in, Lista_Circulara &lc)
+{
+    lc.citire(in);
+    return in;
+}
+ostream & operator << (ostream &out, Lista_Circulara &lc)
+{
+    lc.afisare(out);
+    return out;
+};
 int Lista_Circulara::josephus(int k, int n)
 {
     ///!! copiere lista
@@ -449,9 +471,17 @@ int main()
     delete lc;
 
     //    lc->inserare_sfarsit(2);*/
-    Lista* ld = new Lista();
-    int val1 = 1, val2 = 2;
-    ld >> val1;
+    /*Lista_Circulara lc;
+    for(int i = 1; i <= 3; i++)
+        cin >> lc;
+    cout << lc;*/
+
+   // Nod* n1 = new Nod(2);
+    //Nod* n2 = new Nod(*n1);
+   // Nod n2(*n1);
+
+   Nod* n;
+   cin >> n;
 
     return 0;
 }
