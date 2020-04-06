@@ -18,6 +18,7 @@ public:
     Nod* getNext();
     void setInfo(int);
     void setNext(Nod*);
+    Nod& operator =(const Nod&);
     friend istream& operator >>(istream&, Nod&);
     friend ostream& operator <<(ostream&, Nod&);
 };
@@ -61,6 +62,10 @@ void Nod::setInfo(int info)
 void Nod::setNext(Nod* next)
 {
     this -> next = next;
+}
+Nod& Nod::operator =(const Nod &n){
+    info = n.info;
+    next = n.next;
 }
 istream& operator >>(istream& in, Nod& n)
 {
@@ -124,7 +129,6 @@ void Nod_dublu::setAnte(Nod* ante)
     this -> ante = ante;
 }
 
-
 class Lista
 {
 protected:
@@ -144,6 +148,7 @@ public:
     virtual void afisare(ostream &);
     friend istream & operator >> (istream &, Lista &);
     friend ostream & operator << (ostream &, Lista &);
+    Lista& operator =(Lista &);
 };
 
 Lista::Lista()
@@ -329,6 +334,20 @@ ostream & operator << (ostream &out, Lista &lc)
     lc.afisare(out);
     return out;
 }
+Lista& Lista::operator =(Lista &ld)
+{
+    cout << "asig lista";
+    Nod_dublu* p = ld.prim;
+    Nod_dublu* r = prim;
+    while(p != ld.ultim)
+    {
+        prim = ld.prim;
+        p = (Nod_dublu*) p -> getNext();
+        r = (Nod_dublu*) r -> getNext();
+    }
+    ultim = ld.ultim;
+}
+
 
 class Lista_Circulara:public Lista
 {
@@ -417,14 +436,13 @@ int Lista_Circulara::josephus(int k, int n)
 {
     ///!! copiere lista
     int cnt = 0, poz = 0, nr = n;
-
-    Nod_dublu* aux = prim;
-    if(prim == NULL)
+    if(nr == 0)
     {
         cout << "Nu se poate efectua operatia.\n";
         return 0;
     }
 
+    Nod_dublu* aux = prim;
     while(nr != 0)
     {
         cnt++;
@@ -435,16 +453,9 @@ int Lista_Circulara::josephus(int k, int n)
         if(cnt == k)
         {
             cnt = 0;
-            cout << aux -> getInfo();
-            Nod_dublu* pred = (Nod_dublu*) aux -> getAnte();
-            Nod_dublu* succ = (Nod_dublu*) aux -> getAnte();
-            pred -> setNext(succ);
-            succ -> setAnte(pred);
-            if(aux == ultim)
-                ultim = pred;
-            else if(aux == prim)
-                prim = succ;
-            delete aux;
+            if(nr == 1)
+                cout << aux -> getInfo();
+            stergere_pozitie(poz, nr);
             aux =(Nod_dublu*) aux -> getNext();
             nr--;
             poz--;
@@ -456,15 +467,13 @@ int Lista_Circulara::josephus(int k, int n)
 
 int main()
 {
-    /*Lista_Circulara* lc = new Lista_Circulara();
-    lc->inserare_final(2);
-    lc->inserare_final(4);
-    lc->inserare_pozitie(2, 3, 2);
-    lc->inserare_pozitie(4, 5, 3);
-    lc->inserare_pozitie(1, 1, 4);
-    lc->afisare();
-    // lc->josephus(2, 5);
-    cout << "\n\n";
+    Lista_Circulara lc;
+    for(int i = 1; i <= 3; i++)
+        cin >> lc;
+    cout << lc;
+    lc.josephus(3, 3);
+
+  /*  cout << "\n\n";
     Lista_Circulara* lc3(lc);
     lc3 -> afisare();
 
@@ -480,8 +489,10 @@ int main()
     //Nod* n2 = new Nod(*n1);
    // Nod n2(*n1);
 
-   Nod* n;
-   cin >> n;
+   //Nod n(2);
+   /*Nod n(2);
+   Nod* n1;
+    n = *n1;*/
 
     return 0;
 }
