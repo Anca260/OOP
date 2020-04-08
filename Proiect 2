@@ -63,7 +63,8 @@ void Nod::setNext(Nod* next)
 {
     this -> next = next;
 }
-Nod& Nod::operator =(const Nod &n){
+Nod& Nod::operator =(const Nod &n)
+{
     info = n.info;
     next = n.next;
 }
@@ -78,6 +79,7 @@ ostream& operator <<(ostream& out, Nod& n)
     return out;
 }
 
+///--------------------------------------------------
 
 class Nod_dublu:public Nod
 {
@@ -94,6 +96,9 @@ public:
 
     Nod* getAnte();
     void setAnte(Nod*);
+    Nod_dublu& operator =(const Nod_dublu&);
+    friend istream& operator >>(istream&, Nod_dublu&);
+    friend ostream& operator <<(ostream&, Nod_dublu&);
 };
 
 Nod_dublu::Nod_dublu()
@@ -128,6 +133,21 @@ void Nod_dublu::setAnte(Nod* ante)
 {
     this -> ante = ante;
 }
+Nod_dublu& Nod_dublu::operator =(const Nod_dublu &n)
+{
+    Nod::operator=(n);
+    ante = n.ante;
+}
+istream& operator >>(istream& in, Nod_dublu& n)
+{
+    in >>((Nod&) n);
+}
+ostream& operator <<(ostream& out, Nod_dublu& n)
+{
+    out <<((Nod&) n);
+}
+
+///----------------------------------------
 
 class Lista
 {
@@ -313,6 +333,11 @@ void Lista::citire(istream& in)
 void Lista::afisare(ostream& out)
 {
     Nod_dublu* p = prim;
+    if(prim == NULL)
+    {
+        out << "Lista vida\n";
+        return;
+    }
     while(p != ultim)
     {
         out << p -> getInfo() << " ";
@@ -337,17 +362,18 @@ ostream & operator << (ostream &out, Lista &lc)
 Lista& Lista::operator =(Lista &ld)
 {
     cout << "asig lista";
-    Nod_dublu* p = ld.prim;
-    Nod_dublu* r = prim;
-    while(p != ld.ultim)
+    Nod_dublu* p = prim;
+
+    while(p != NULL)
     {
-        prim = ld.prim;
+
         p = (Nod_dublu*) p -> getNext();
-        r = (Nod_dublu*) r -> getNext();
     }
-    ultim = ld.ultim;
+
+
 }
 
+///-------------------------------------------
 
 class Lista_Circulara:public Lista
 {
@@ -416,11 +442,14 @@ void Lista_Circulara::citire(istream& in)
 void Lista_Circulara::afisare(ostream& out)
 {
     Lista::afisare(out);
-    ultim -> setNext(prim);
-    prim -> setAnte(ultim);
-    cout << prim -> getInfo() << " ";
-    cout << prim -> getAnte() << " ";
-    cout << prim -> getNext() << " \n";
+    if(prim != NULL)
+    {
+        ultim -> setNext(prim);
+        prim -> setAnte(ultim);
+        cout << prim -> getInfo() << " ";
+        cout << prim -> getAnte() << " ";
+        cout << prim -> getNext() << " \n";
+    }
 }
 istream & operator >> (istream &in, Lista_Circulara &lc)
 {
@@ -467,32 +496,67 @@ int Lista_Circulara::josephus(int k, int n)
 
 int main()
 {
-    Lista_Circulara lc;
-    for(int i = 1; i <= 3; i++)
-        cin >> lc;
-    cout << lc;
-    lc.josephus(3, 3);
+    /* Nod_dublu* n = new Nod_dublu(2);
+     cout << *n;
+     cout << "\n";
+     Nod_dublu* n1 = new Nod_dublu();
+     cin >> *n1;
+     cout << *n1;*/
 
-  /*  cout << "\n\n";
-    Lista_Circulara* lc3(lc);
-    lc3 -> afisare();
 
-    delete lc;
 
-    //    lc->inserare_sfarsit(2);*/
+ /*   Lista_Circulara* lc = new Lista_Circulara();
+    for(int i = 1; i <= 0; i++)
+        cin >> *lc;
+    cout << *lc;
+    lc.josephus(3, 3);*/
+
+
+    /* Nod_dublu* n = new Nod_dublu(3);
+     Nod_dublu* n1 = new Nod_dublu(4);
+     *n = *n1;
+     cout << *n;
+     */
+
+
+    /*  cout << "\n\n";
+      Lista_Circulara* lc3(lc);
+      lc3 -> afisare();
+
+      delete lc;
+
+      //    lc->inserare_sfarsit(2);*/
     /*Lista_Circulara lc;
     for(int i = 1; i <= 3; i++)
         cin >> lc;
     cout << lc;*/
 
-   // Nod* n1 = new Nod(2);
+    // Nod* n1 = new Nod(2);
     //Nod* n2 = new Nod(*n1);
-   // Nod n2(*n1);
+    // Nod n2(*n1);
 
-   //Nod n(2);
-   /*Nod n(2);
-   Nod* n1;
-    n = *n1;*/
+    //Nod n(2);
+    /*Nod n(2);
+    Nod* n1;
+     n = *n1;*/
+
+     int i;
+     Lista ld1;
+     for(i = 1; i <= 2; i++)
+         cin >> ld1;
+
+     Lista ld2;
+     for(i = 1; i <= 2; i++)
+         cin >> ld2;
+
+     cout << ld1;
+     cout << "\n\n";
+     cout << ld2;
+     cout << "\n\n";
+
+     ld1 = ld2;
+     cout << "\n\n";
+     cout << ld1;
 
     return 0;
 }
