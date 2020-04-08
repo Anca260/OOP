@@ -161,9 +161,10 @@ public:
     Lista(const Lista&);
     virtual ~Lista();
 
+    int nr_noduri();
     void inserare_final(int);
-    void inserare_pozitie(int, int, int);
-    void stergere_pozitie(int, int);
+    void inserare_pozitie(int, int);
+    void stergere_pozitie(int);
     virtual void citire(istream &);
     virtual void afisare(ostream &);
     friend istream & operator >> (istream &, Lista &);
@@ -215,7 +216,18 @@ Lista::~Lista()
 
     delete p;
 }
-
+int Lista::nr_noduri()
+{
+    int nr = 0;
+    Nod_dublu* p = prim;
+    while(p != ultim)
+    {
+        nr++;
+        p = (Nod_dublu*) p -> getNext();
+    }
+    nr++;
+    return nr;
+}
 void Lista::inserare_final(int info)
 {
     if(prim == NULL)
@@ -231,8 +243,9 @@ void Lista::inserare_final(int info)
         ultim = aux;
     }
 }
-void Lista::inserare_pozitie(int poz, int data, int n)
+void Lista::inserare_pozitie(int poz, int data)
 {
+    int n = nr_noduri();
     if(poz > n + 1)
     {
         cout << "Valoarea introdusa ca pozitie este incorecta.\n";
@@ -267,8 +280,9 @@ void Lista::inserare_pozitie(int poz, int data, int n)
         p -> setNext(aux);
     }
 }
-void Lista::stergere_pozitie(int poz, int n)
+void Lista::stergere_pozitie(int poz)
 {
+    int n = nr_noduri();
     if(prim == NULL)
     {
         cout << "Nu se poate efectua stergerea.\n";
@@ -361,15 +375,25 @@ ostream & operator << (ostream &out, Lista &lc)
 }
 Lista& Lista::operator =(Lista &ld)
 {
-    cout << "asig lista";
+    int n = nr_noduri();
     Nod_dublu* p = prim;
 
-    while(p != NULL)
+    while(p != ultim)
     {
+        stergere_pozitie(1);
+        p = (Nod_dublu*) p -> getNext();
+        n--;
+    }
+    stergere_pozitie(1);
 
+
+    p = ld.prim;
+    while(p != ld.ultim)
+    {
+        inserare_final(p -> getInfo());
         p = (Nod_dublu*) p -> getNext();
     }
-
+    inserare_final(p -> getInfo());
 
 }
 
@@ -377,8 +401,6 @@ Lista& Lista::operator =(Lista &ld)
 
 class Lista_Circulara:public Lista
 {
-private:
-    // Lista ld;
 public:
     Lista_Circulara();
     Lista_Circulara(int, int*);
@@ -386,13 +408,14 @@ public:
     ~Lista_Circulara();
 
     void inserare_final(int);
-    void inserare_pozitie(int, int, int);
-    void stergere_pozitie(int, int);
+    void inserare_pozitie(int, int);
+    void stergere_pozitie(int);
     void citire(istream&);
     void afisare(ostream&);
+    Lista_Circulara& operator =(Lista_Circulara &);
     friend istream & operator >> (istream &, Lista_Circulara &);
     friend ostream & operator << (ostream &, Lista_Circulara &);
-    int josephus(int, int);
+    int josephus(int);
 };
 
 Lista_Circulara::Lista_Circulara():Lista() {};
@@ -413,15 +436,16 @@ void Lista_Circulara::inserare_final(int info)
     ultim -> setNext(prim);
     prim -> setAnte(ultim);
 }
-void Lista_Circulara::inserare_pozitie(int poz, int data, int n)
+void Lista_Circulara::inserare_pozitie(int poz, int data)
 {
-    Lista::inserare_pozitie(poz, data, n);
+    Lista::inserare_pozitie(poz, data);
     ultim -> setNext(prim);
     prim -> setAnte(ultim);
 }
-void Lista_Circulara::stergere_pozitie(int poz, int n)
+void Lista_Circulara::stergere_pozitie(int poz)
 {
-    Lista::stergere_pozitie(poz, n);
+    int n = nr_noduri();
+    Lista::stergere_pozitie(poz);
     if(poz == 1 && prim != NULL)
     {
         ultim -> setNext(prim);
@@ -451,6 +475,12 @@ void Lista_Circulara::afisare(ostream& out)
         cout << prim -> getNext() << " \n";
     }
 }
+Lista_Circulara& Lista_Circulara::operator =(Lista_Circulara &lc)
+{
+    Lista::operator=(lc);
+    ultim -> setNext(prim);
+    prim -> setAnte(ultim);
+}
 istream & operator >> (istream &in, Lista_Circulara &lc)
 {
     lc.citire(in);
@@ -461,10 +491,11 @@ ostream & operator << (ostream &out, Lista_Circulara &lc)
     lc.afisare(out);
     return out;
 };
-int Lista_Circulara::josephus(int k, int n)
+int Lista_Circulara::josephus(int k)
 {
     ///!! copiere lista
-    int cnt = 0, poz = 0, nr = n;
+    int nr = nr_noduri();
+    int cnt = 0, poz = 0;
     if(nr == 0)
     {
         cout << "Nu se poate efectua operatia.\n";
@@ -472,7 +503,7 @@ int Lista_Circulara::josephus(int k, int n)
     }
 
     Nod_dublu* aux = prim;
-    while(nr != 0)
+    while(nr != 1)
     {
         cnt++;
         if(aux == prim)
@@ -482,9 +513,7 @@ int Lista_Circulara::josephus(int k, int n)
         if(cnt == k)
         {
             cnt = 0;
-            if(nr == 1)
-                cout << aux -> getInfo();
-            stergere_pozitie(poz, nr);
+            stergere_pozitie(poz);
             aux =(Nod_dublu*) aux -> getNext();
             nr--;
             poz--;
@@ -492,6 +521,7 @@ int Lista_Circulara::josephus(int k, int n)
         else if(cnt != k && prim != ultim)
             aux = (Nod_dublu*) aux -> getNext();
     }
+    cout << prim -> getInfo();
 }
 
 int main()
@@ -505,11 +535,11 @@ int main()
 
 
 
- /*   Lista_Circulara* lc = new Lista_Circulara();
-    for(int i = 1; i <= 0; i++)
-        cin >> *lc;
-    cout << *lc;
-    lc.josephus(3, 3);*/
+      /* Lista_Circulara* lc = new Lista_Circulara();
+       for(int i = 1; i <= 5; i++)
+           cin >> *lc;
+       cout << *lc;
+       lc -> josephus(2);*/
 
 
     /* Nod_dublu* n = new Nod_dublu(3);
@@ -540,23 +570,23 @@ int main()
     Nod* n1;
      n = *n1;*/
 
-     int i;
-     Lista ld1;
-     for(i = 1; i <= 2; i++)
-         cin >> ld1;
+    /*int i;
+    Lista_Circulara ld1;
+    for(i = 1; i <= 4; i++)
+        cin >> ld1;
 
-     Lista ld2;
-     for(i = 1; i <= 2; i++)
-         cin >> ld2;
+    Lista_Circulara ld2;
+    for(i = 1; i <= 3; i++)
+        cin >> ld2;
 
-     cout << ld1;
-     cout << "\n\n";
-     cout << ld2;
-     cout << "\n\n";
+    cout << ld1;
+    cout << "\n\n";
+    cout << ld2;
+    cout << "\n\n";
 
-     ld1 = ld2;
-     cout << "\n\n";
-     cout << ld1;
-
+    ld2 = ld1;
+    cout << "\n\n";
+    cout << ld2;
+*/
     return 0;
 }
