@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -219,6 +221,9 @@ Lista::~Lista()
 int Lista::nr_noduri()
 {
     int nr = 0;
+    if(prim == NULL)
+        return 0;
+
     Nod_dublu* p = prim;
     while(p != ultim)
     {
@@ -255,7 +260,10 @@ void Lista::inserare_pozitie(int poz, int data)
     if(poz == 1) ///inserarea unui element la inceputul listei
     {
         if(prim == NULL)
+        {
             prim = new Nod_dublu(data);
+            ultim = prim;
+        }
         else
         {
             Nod_dublu* aux = new Nod_dublu(data, prim);
@@ -298,7 +306,7 @@ void Lista::stergere_pozitie(int poz)
     {
         if (prim == ultim)
         {
-            delete prim;
+            //  delete prim;
             prim = NULL;
             ultim = NULL;
         }
@@ -346,22 +354,24 @@ void Lista::citire(istream& in)
 }
 void Lista::afisare(ostream& out)
 {
-    Nod_dublu* p = prim;
     if(prim == NULL)
     {
         out << "Lista vida\n";
         return;
     }
+
+    out << "Lista este:\n";
+    Nod_dublu* p = prim;
+
     while(p != ultim)
     {
-        out << p -> getInfo() << " ";
-        out << p -> getAnte() << " ";
-        out << p -> getNext() << " \n";
+        out << p -> getInfo();
+        out << " <-> ";
         p = (Nod_dublu*) p -> getNext();
     }
-    out << p -> getInfo() << " ";
-    out << p -> getAnte() << " ";
-    out << p -> getNext() << " \n";
+
+    out << ultim -> getInfo() << " ";
+
 }
 istream & operator >> (istream &in, Lista &lc)
 {
@@ -378,23 +388,27 @@ Lista& Lista::operator =(Lista &ld)
     int n = nr_noduri();
     Nod_dublu* p = prim;
 
-    while(p != ultim)
+    if(prim != NULL)
     {
+        while(p != ultim)
+        {
+            stergere_pozitie(1);
+            p = (Nod_dublu*) p -> getNext();
+            n--;
+        }
         stergere_pozitie(1);
-        p = (Nod_dublu*) p -> getNext();
-        n--;
     }
-    stergere_pozitie(1);
 
-
-    p = ld.prim;
-    while(p != ld.ultim)
+    if(ld.prim != NULL)
     {
+        p = ld.prim;
+        while(p != ld.ultim)
+        {
+            inserare_final(p -> getInfo());
+            p = (Nod_dublu*) p -> getNext();
+        }
         inserare_final(p -> getInfo());
-        p = (Nod_dublu*) p -> getNext();
     }
-    inserare_final(p -> getInfo());
-
 }
 
 ///-------------------------------------------
@@ -412,9 +426,9 @@ public:
     void stergere_pozitie(int);
     void citire(istream&);
     void afisare(ostream&);
-    Lista_Circulara& operator =(Lista_Circulara &);
     friend istream & operator >> (istream &, Lista_Circulara &);
     friend ostream & operator << (ostream &, Lista_Circulara &);
+    Lista_Circulara& operator =(Lista_Circulara &);
     int josephus(int);
 };
 
@@ -439,8 +453,11 @@ void Lista_Circulara::inserare_final(int info)
 void Lista_Circulara::inserare_pozitie(int poz, int data)
 {
     Lista::inserare_pozitie(poz, data);
-    ultim -> setNext(prim);
-    prim -> setAnte(ultim);
+    if(prim != NULL)
+    {
+        ultim -> setNext(prim);
+        prim -> setAnte(ultim);
+    }
 }
 void Lista_Circulara::stergere_pozitie(int poz)
 {
@@ -451,7 +468,7 @@ void Lista_Circulara::stergere_pozitie(int poz)
         ultim -> setNext(prim);
         prim -> setAnte(ultim);
     }
-    else if(poz == n)
+    else if(prim != NULL && poz == n)
     {
         ultim -> setNext(prim);
         prim -> setAnte(ultim);
@@ -470,9 +487,8 @@ void Lista_Circulara::afisare(ostream& out)
     {
         ultim -> setNext(prim);
         prim -> setAnte(ultim);
-        cout << prim -> getInfo() << " ";
-        cout << prim -> getAnte() << " ";
-        cout << prim -> getNext() << " \n";
+        out << "<-> ";
+        out << prim -> getInfo() << "\n";
     }
 }
 Lista_Circulara& Lista_Circulara::operator =(Lista_Circulara &lc)
@@ -493,7 +509,6 @@ ostream & operator << (ostream &out, Lista_Circulara &lc)
 };
 int Lista_Circulara::josephus(int k)
 {
-    ///!! copiere lista
     int nr = nr_noduri();
     int cnt = 0, poz = 0;
     if(nr == 0)
@@ -524,8 +539,133 @@ int Lista_Circulara::josephus(int k)
     cout << prim -> getInfo();
 }
 
+
+void menu_output()
+{
+    cout << "\n Nita Anca, Grupa 211 - Proiect 2 - Nume proiect: Liste de numere întregi 2 (implementate dinamic) \n";
+    cout << "\n\t MENIU:";
+    cout << "\n===========================================\n";
+    cout << "\n";
+    cout << "1. Crearea listei \n";
+    cout << "2. Inserarea unui element pe o anumita pozitie a listei \n";
+    cout << "3. Stergerea unui element de pe o anumita pozitie din lista \n";
+    cout << "4. Problema Josephus \n";
+    cout << "5. Afisarea listei \n";
+    cout << "0. Iesire. \n";
+}
+
+
+void menu(Lista_Circulara* lc)
+{
+    int option;  ///optiunea aleasa din meniu
+    option = 0;
+    int ok = 0;
+
+    do
+    {
+        menu_output();
+
+        cout << "\nIntroduceti numarul actiunii: ";
+        cin >> option;
+
+        if (option == 1)
+        {
+            if(ok == 1)
+                cout << "Lista are deja elemente\n";
+            else
+            {
+                cout << "Introduceti numarul de elemente al listei: ";
+                int n;
+                cin >> n;
+
+                if(n == 0)
+                    cout << "Lista vida\n";
+                else
+                {
+                    ok = 1;
+                    cout << "Introduceti cele " << n << " elemente ale listei: ";
+                    int i;
+                    for(i = 0; i < n; i++)
+                        cin >> *lc;
+                    cout << *lc;
+                }
+            }
+        }
+        if (option == 2)
+        {
+            cout << *lc;
+
+            cout << "Introduceti noua valoare de inserat in lista: ";
+            int data;
+            cin >> data;
+
+            cout << "Introduceti pozitia pe care sa se insereze elementul: ";
+            int poz;
+            cin >> poz;
+
+            lc -> inserare_pozitie(poz, data);
+            cout << *lc;
+
+            int n = lc -> nr_noduri();
+            if(poz <= n + 1)
+                ok = 1;
+        }
+
+        if (option == 3)
+        {
+            cout << *lc;
+
+            cout << "Introduceti pozitia de pe care se va sterge elementul: ";
+            int poz;
+            cin >> poz;
+
+            lc -> stergere_pozitie(poz);
+            cout << *lc;
+
+
+        }
+
+        if (option == 4)
+        {
+            cout << "Introduceti o valoare (din cat in cat parcurgem lista): ";
+            int k;
+            cin >> k;
+
+            cout << "Pozitia ultimei persoane ramase este: ";
+            cout << lc -> josephus(k);
+            cout << "\n";
+        }
+
+        if (option == 5)
+        {
+            cout << *lc;
+        }
+
+
+        if (option == 0)
+        {
+            cout << "\nEXIT!\n";
+        }
+
+        if (option < 0 || option > 7)
+        {
+            cout << "\nSelectie invalida\n";
+        }
+
+        cout << "\n";
+        system("pause"); ///Pauza - Press any key to continue...
+        system("cls");   ///Sterge continutul curent al consolei
+    }
+    while(option != 0);
+}
+
+
 int main()
 {
+    Lista_Circulara* lc = new Lista_Circulara();
+    //Lista* lc = new Lista();
+    menu(lc);
+
     /* Nod_dublu* n = new Nod_dublu(2);
      cout << *n;
      cout << "\n";
@@ -534,13 +674,13 @@ int main()
      cout << *n1;*/
 
 
-
-      /* Lista_Circulara* lc = new Lista_Circulara();
-       for(int i = 1; i <= 5; i++)
-           cin >> *lc;
-       cout << *lc;
-       lc -> josephus(2);*/
-
+    /*
+           Lista_Circulara* lc = new Lista_Circulara();
+           for(int i = 1; i <= 5; i++)
+               cin >> *lc;
+           cout << *lc;
+           lc -> josephus(2);
+    */
 
     /* Nod_dublu* n = new Nod_dublu(3);
      Nod_dublu* n1 = new Nod_dublu(4);
@@ -570,23 +710,23 @@ int main()
     Nod* n1;
      n = *n1;*/
 
-    /*int i;
-    Lista_Circulara ld1;
-    for(i = 1; i <= 4; i++)
-        cin >> ld1;
+    /*  int i;
+      Lista_Circulara ld1;
+     // for(i = 1; i <= 0; i++)
+    //      cin >> ld1;
 
-    Lista_Circulara ld2;
-    for(i = 1; i <= 3; i++)
-        cin >> ld2;
+      Lista_Circulara ld2;
+      //for(i = 1; i <= 0; i++)
+        //  cin >> ld2;
 
-    cout << ld1;
-    cout << "\n\n";
-    cout << ld2;
-    cout << "\n\n";
+      cout << ld1;
+      cout << "\n\n";
+      cout << ld2;
+      cout << "\n\n";
 
-    ld2 = ld1;
-    cout << "\n\n";
-    cout << ld2;
-*/
+      ld1 = ld2;
+      cout << "\n\n";
+      cout << ld1;*/
+
     return 0;
 }
