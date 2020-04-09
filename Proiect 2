@@ -156,6 +156,7 @@ class Lista
 protected:
     Nod_dublu* prim;
     Nod_dublu* ultim;
+    static int a;
 
 public:
     Lista();
@@ -173,8 +174,13 @@ public:
     friend istream & operator >> (istream &, Lista &);
     friend ostream & operator << (ostream &, Lista &);
     Lista& operator =(Lista &);
+    static void numarInserariFinal()
+    {
+        cout << a;
+    };
 };
 
+int Lista::a;
 Lista::Lista()
 {
     prim = NULL;
@@ -185,7 +191,10 @@ Lista::Lista(int n, int *v)
     prim = NULL;
     ultim = NULL;
     for(int i = 1; i <= n; i++)
+    {
         inserare_final(v[i]);
+        a++;
+    }
 }
 Lista::Lista(const Lista& ld)
 {
@@ -236,6 +245,7 @@ int Lista::nr_noduri()
 }
 void Lista::inserare_final(int info)
 {
+    a++;
     if(prim == NULL)
     {
         prim = new Nod_dublu(info);
@@ -349,15 +359,13 @@ void Lista::stergere_pozitie(int poz)
 }
 void Lista::lista_simpla()
 {
-    /*Nod_dublu* p = ultim;
-    Nod_dublu* r;
-    while(p != prim)
+    Nod* aux = prim;
+    while(aux != ultim)
     {
-        cout << p -> getInfo() << " -> ";
-        Nod_dublu* r = p -> getAnte();
-       //  p = (Nod*) r;
+        cout << aux -> getInfo() << " -> ";
+        aux = aux -> getNext();
     }
-    cout << p -> getInfo();*/
+    cout << aux -> getInfo();
 }
 void Lista::citire(istream& in)
 {
@@ -423,6 +431,7 @@ Lista& Lista::operator =(Lista &ld)
         inserare_final(p -> getInfo());
     }
 }
+
 
 ///-------------------------------------------
 
@@ -490,9 +499,9 @@ void Lista_Circulara::stergere_pozitie(int poz)
 }
 void Lista_Circulara::lista_simpla()
 {
-    /*Lista::lista_simpla();
-    ultim -> setNext(prim);
-    cout << " -> " << prim -> getInfo();*/
+    Lista::lista_simpla();
+    Nod* aux = prim;
+    cout << " -> " << aux -> getInfo();
 }
 void Lista_Circulara::citire(istream& in)
 {
@@ -566,14 +575,14 @@ void citire_completa(int n)
     Lista_Circulara* p = new Lista_Circulara[n];
     int i, j;
     for(i = 0; i < n; i++)
-        {
-            int m;
-            cout << "Nr elemente lista " << i + 1 << ": ";
-            cin >> m;
-            cout << "Introduceti cele " << m << " elemente: ";
-            for(j = 0; j < m; j++)
-                cin >> p[i];
-        }
+    {
+        int m;
+        cout << "Nr elemente lista " << i + 1 << ": ";
+        cin >> m;
+        cout << "Introduceti cele " << m << " elemente: ";
+        for(j = 0; j < m; j++)
+            cin >> p[i];
+    }
 
     for(i = 0; i < n; i++)
         cout << i + 1 << ") " << p[i];
@@ -584,13 +593,14 @@ void menu_output()
     cout << "\n\t MENIU:";
     cout << "\n================================== ========================\n";
     cout << "\n";
-    cout << "1. Crearea listei \n";
-    cout << "2. Inserarea unui element pe o anumita pozitie a listei \n";
-    cout << "3. Stergerea unui element de pe o anumita pozitie din lista \n";
+    cout << "1. Crearea listei circulare\n";
+    cout << "2. Inserarea unui element pe o anumita pozitie a listei circulare\n";
+    cout << "3. Stergerea unui element de pe o anumita pozitie din lista circulara\n";
     cout << "4. Problema Josephus \n";
     cout << "5. Afisare lista circulara, dublu inlantuita\n";
     cout << "6. Afisare lista circulara, simplu inlantuita\n";
     cout << "7. Citirea, memorarea si afisarea a n liste circulare\n";
+    cout << "8. Afisare numar inserari elemente la finalul listei\n";
     cout << "0. Iesire. \n";
 }
 
@@ -667,6 +677,7 @@ void menu(Lista_Circulara* lc)
 
         if (option == 4)
         {
+            cout << *lc;
             cout << "Introduceti o valoare (din cat in cat parcurgem lista): ";
             int k;
             cin >> k;
@@ -675,7 +686,7 @@ void menu(Lista_Circulara* lc)
             ld = lc;
             int val = ld -> josephus(k);
             if(val != -1)
-                cout << "Pozitia ultimei persoane ramase este: " << val;
+                cout << "Ultimul nod ramas are valoarea: " << val;
             cout << "\n";
         }
 
@@ -697,12 +708,19 @@ void menu(Lista_Circulara* lc)
             citire_completa(n);
         }
 
+        if(option == 8)
+        {
+            cout << "Au fost efectuate ";
+            Lista::numarInserariFinal();
+            cout << " inserari ale elementelor la finalul listei.";
+        }
+
         if (option == 0)
         {
             cout << "\nEXIT!\n";
         }
 
-        if (option < 0 || option > 7)
+        if (option < 0 || option > 8)
         {
             cout << "\nSelectie invalida\n";
         }
