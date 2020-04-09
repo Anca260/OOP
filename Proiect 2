@@ -349,13 +349,15 @@ void Lista::stergere_pozitie(int poz)
 }
 void Lista::lista_simpla()
 {
-    Nod* p = prim;
-    while(p != ultim)
+    /*Nod_dublu* p = ultim;
+    Nod_dublu* r;
+    while(p != prim)
     {
         cout << p -> getInfo() << " -> ";
-        p = (Nod*) p -> getNext();
+        Nod_dublu* r = p -> getAnte();
+       //  p = (Nod*) r;
     }
-    cout << p -> getInfo();
+    cout << p -> getInfo();*/
 }
 void Lista::citire(istream& in)
 {
@@ -488,9 +490,9 @@ void Lista_Circulara::stergere_pozitie(int poz)
 }
 void Lista_Circulara::lista_simpla()
 {
-    Lista::lista_simpla();
+    /*Lista::lista_simpla();
     ultim -> setNext(prim);
-    cout << " -> " << prim -> getInfo();
+    cout << " -> " << prim -> getInfo();*/
 }
 void Lista_Circulara::citire(istream& in)
 {
@@ -557,7 +559,25 @@ int Lista_Circulara::josephus(int k)
     return aux -> getInfo();
 }
 
+///-----------------------------------------------
 
+void citire_completa(int n)
+{
+    Lista_Circulara* p = new Lista_Circulara[n];
+    int i, j;
+    for(i = 0; i < n; i++)
+        {
+            int m;
+            cout << "Nr elemente lista " << i + 1 << ": ";
+            cin >> m;
+            cout << "Introduceti cele " << m << " elemente: ";
+            for(j = 0; j < m; j++)
+                cin >> p[i];
+        }
+
+    for(i = 0; i < n; i++)
+        cout << i + 1 << ") " << p[i];
+}
 void menu_output()
 {
     cout << "\n Nita Anca, Grupa 211 - Proiect 2 - Nume proiect: Liste de numere întregi 2 (implementate dinamic) \n";
@@ -570,6 +590,7 @@ void menu_output()
     cout << "4. Problema Josephus \n";
     cout << "5. Afisare lista circulara, dublu inlantuita\n";
     cout << "6. Afisare lista circulara, simplu inlantuita\n";
+    cout << "7. Citirea, memorarea si afisarea a n liste circulare\n";
     cout << "0. Iesire. \n";
 }
 
@@ -668,6 +689,14 @@ void menu(Lista_Circulara* lc)
             lc -> lista_simpla();
         }
 
+        if(option == 7)
+        {
+            int n;
+            cout << "Introduceti nr de liste: ";
+            cin >> n;
+            citire_completa(n);
+        }
+
         if (option == 0)
         {
             cout << "\nEXIT!\n";
@@ -689,70 +718,7 @@ void menu(Lista_Circulara* lc)
 int main()
 {
     Lista_Circulara* lc = new Lista_Circulara();
-    //Lista* lc = new Lista();
     menu(lc);
-
-    /* Nod_dublu* n = new Nod_dublu(2);
-     cout << *n;
-     cout << "\n";
-     Nod_dublu* n1 = new Nod_dublu();
-     cin >> *n1;
-     cout << *n1;*/
-
-
-    /*
-           Lista_Circulara* lc = new Lista_Circulara();
-           for(int i = 1; i <= 5; i++)
-               cin >> *lc;
-           cout << *lc;
-           lc -> josephus(2);
-    */
-
-    /* Nod_dublu* n = new Nod_dublu(3);
-     Nod_dublu* n1 = new Nod_dublu(4);
-     *n = *n1;
-     cout << *n;
-     */
-
-
-    /*  cout << "\n\n";
-      Lista_Circulara* lc3(lc);
-      lc3 -> afisare();
-
-      delete lc;
-
-      //    lc->inserare_sfarsit(2);*/
-    /*Lista_Circulara lc;
-    for(int i = 1; i <= 3; i++)
-        cin >> lc;
-    cout << lc;*/
-
-    // Nod* n1 = new Nod(2);
-    //Nod* n2 = new Nod(*n1);
-    // Nod n2(*n1);
-
-    //Nod n(2);
-    /*Nod n(2);
-    Nod* n1;
-     n = *n1;*/
-
-    /*  int i;
-      Lista_Circulara ld1;
-     // for(i = 1; i <= 0; i++)
-    //      cin >> ld1;
-
-      Lista_Circulara ld2;
-      //for(i = 1; i <= 0; i++)
-        //  cin >> ld2;
-
-      cout << ld1;
-      cout << "\n\n";
-      cout << ld2;
-      cout << "\n\n";
-
-      ld1 = ld2;
-      cout << "\n\n";
-      cout << ld1;*/
 
     return 0;
 }
