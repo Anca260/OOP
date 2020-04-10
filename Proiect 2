@@ -1,8 +1,18 @@
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 #include <iostream>
 #include <cstdlib>
-#include <stdlib.h>
 
 using namespace std;
+
+class Container
+{
+public:
+    virtual int nr_noduri() = 0;
+};
+
+///---------------------------------
 
 class Nod
 {
@@ -151,7 +161,7 @@ ostream& operator <<(ostream& out, Nod_dublu& n)
 
 ///----------------------------------------
 
-class Lista
+class Lista: public Container
 {
 protected:
     Nod_dublu* prim;
@@ -317,7 +327,7 @@ void Lista::stergere_pozitie(int poz)
     {
         if (prim == ultim)
         {
-            //  delete prim;
+            delete prim;
             prim = NULL;
             ultim = NULL;
         }
@@ -359,11 +369,11 @@ void Lista::stergere_pozitie(int poz)
 }
 void Lista::lista_simpla()
 {
-    Nod* aux = prim;
-    while(aux != ultim)
+    Nod* aux = (Nod*)prim;    ///upcast explicit
+    while(aux != (Nod*)ultim)  ///upcast explicit
     {
         cout << aux -> getInfo() << " -> ";
-        aux = aux -> getNext();
+        aux = aux -> getNext();    ///upcast implicit
     }
     cout << aux -> getInfo();
 }
@@ -388,7 +398,7 @@ void Lista::afisare(ostream& out)
     {
         out << p -> getInfo();
         out << " <-> ";
-        p = (Nod_dublu*) p -> getNext();
+        p = (Nod_dublu*) p -> getNext();    /// downcast explicit
     }
 
     out << ultim -> getInfo() << " ";
@@ -414,7 +424,7 @@ Lista& Lista::operator =(Lista &ld)
         while(p != ultim)
         {
             stergere_pozitie(1);
-            p = (Nod_dublu*) p -> getNext();
+            p = (Nod_dublu*) p -> getNext();    ///downcast explicit
             n--;
         }
         stergere_pozitie(1);
@@ -435,7 +445,7 @@ Lista& Lista::operator =(Lista &ld)
 
 ///-------------------------------------------
 
-class Lista_Circulara:public Lista
+class Lista_Circulara:public Lista, public Container
 {
 public:
     Lista_Circulara();
@@ -447,6 +457,7 @@ public:
     void inserare_pozitie(int, int);
     void stergere_pozitie(int);
     void lista_simpla();
+    int nr_noduri();
     void citire(istream&);
     void afisare(ostream&);
     friend istream & operator >> (istream &, Lista_Circulara &);
@@ -503,6 +514,10 @@ void Lista_Circulara::lista_simpla()
     Nod* aux = prim;
     cout << " -> " << aux -> getInfo();
 }
+int Lista_Circulara::nr_noduri()
+{
+    return Lista::nr_noduri();
+}
 void Lista_Circulara::citire(istream& in)
 {
     Lista::citire(in);
@@ -540,6 +555,8 @@ int Lista_Circulara::josephus(int k)
 {
     int nr = nr_noduri();
     int cnt = 0, poz = 0;
+    if(prim == NULL)
+        return -1;
     if(nr == 0)
     {
         cout << "Nu se poate efectua operatia.\n";
@@ -586,6 +603,8 @@ void citire_completa(int n)
 
     for(i = 0; i < n; i++)
         cout << i + 1 << ") " << p[i];
+
+    delete[] p;
 }
 void menu_output()
 {
@@ -683,10 +702,13 @@ void menu(Lista_Circulara* lc)
             cin >> k;
 
             Lista_Circulara* ld = new Lista_Circulara();
-            ld = lc;
+            *ld = *lc;
+
             int val = ld -> josephus(k);
             if(val != -1)
-                cout << "Ultimul nod ramas are valoarea: " << val;
+                cout << "Ultimul nod ramas are valoarea: " << val << "\n\n";
+            delete ld;
+            cout << *lc;
             cout << "\n";
         }
 
@@ -735,8 +757,12 @@ void menu(Lista_Circulara* lc)
 
 int main()
 {
+    {
     Lista_Circulara* lc = new Lista_Circulara();
     menu(lc);
+    delete lc;
+    }
+    _CrtDumpMemoryLeaks();
 
     return 0;
 }
