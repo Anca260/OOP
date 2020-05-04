@@ -1,0 +1,167 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Automobil
+{
+protected:
+    string marca;
+    string nume;
+    float pret;
+
+public:
+    Automobil();
+    Automobil(string, string, float);
+    Automobil(const Automobil&);
+    virtual ~Automobil(){};
+
+    string getMarca(){return marca;};
+    string getNume() {return nume;};
+    float getPret() {return pret;};
+    void setMarca(string marca){this -> marca = marca;};
+    void setNume(string nume){this -> nume = nume;};
+    void setPret(float pret){this -> pret = pret;};
+
+    virtual void citire(istream&);
+    virtual void afisare(ostream&);
+    friend istream & operator >> (istream &, Automobil&);
+	friend ostream & operator << (ostream &, Automobil&);
+	void operator =(Automobil&);
+};
+
+Automobil::Automobil()
+{
+    marca = "";
+    nume = "";
+    pret = 0;
+}
+Automobil::Automobil(string marca, string nume, float pret)
+{
+    this -> marca = marca;
+    this -> nume = nume;
+    this -> pret = pret;
+}
+Automobil::Automobil(const Automobil& a)
+{
+    this -> marca = a.marca;
+    this -> nume = a.nume;
+    this -> pret = a.pret;
+}
+void Automobil::citire(istream& in)
+{
+    string s1;
+    cout << "Marca automobil: ";
+    getline(in, s1);
+    marca = s1;
+
+    string s2;
+    cout << "Nume automobil: ";
+    getline(in, s2);
+    nume = s2;
+
+    float n;
+    cout << "Pret: ";
+    in >> n;
+    pret = n;
+}
+void Automobil::afisare(ostream& out)
+{
+    cout << "Marca si nume automobil: " << marca << " " << nume << "\n";
+    cout << "Pret automobil: " << pret << " euro" << "\n";
+}
+istream & operator >> (istream& in, Automobil& a)
+{
+	a.citire(in);
+	return in;
+}
+ostream & operator << (ostream& out, Automobil& a)
+{
+	a.afisare(out);
+	return out;
+}
+void Automobil::operator =(Automobil& a)
+{
+    marca = a.marca;
+    nume = a.nume;
+    pret = a.pret; cout << "assig";
+}
+
+
+///-------------------------------------------------------
+
+
+class Comun: public Automobil
+{
+protected:
+    float lungime;
+    string tip; //de oras sau de drum lung
+
+public:
+    Comun();
+    Comun(string, string, float, float, string);
+    Comun(const Comun&);
+    virtual ~Comun(){};
+
+    float getLungime() {return lungime;};
+    string getTip() {return tip;};
+    void setLungime(float lungime) {this -> lungime = lungime;};
+    void setTip(string tip) {this -> tip = tip;};
+
+    virtual void citire(istream&);
+    virtual void afisare(ostream&);
+    void operator =(Comun&);
+};
+
+Comun::Comun(): Automobil()
+{
+    lungime = 0;
+    tip = "";
+}
+Comun::Comun(string s1, string s2, float n, float lungime, string tip): Automobil(s1, s2, n)
+{
+    this -> lungime = lungime;
+    this -> tip = tip;
+}
+Comun::Comun(const Comun& c)
+{
+    lungime = c.lungime;
+    tip = c.tip;
+}
+void Comun::citire(istream& in)
+{
+    Automobil::citire(in);
+
+    float len;
+    cout << "Lungime automobil: ";
+    in >> len;
+    lungime = len;
+
+    in.get();
+    string s;
+    cout << "Tip masina (de oras sau de drum lung): ";
+    getline(in, s);
+    tip = s;
+}
+void Comun::afisare(ostream& out)
+{
+    Automobil::afisare(out);
+    cout << "Lungime automobil: " << lungime << "\n";
+    cout << "Tip masina: " << tip << "\n";
+}
+void Comun::operator =(const Comun& c)
+{
+    lungime = c.lungime;
+    tip = c.tip;
+    cout << "assig";
+}
+
+int main()
+{
+    Comun* a = new Comun("audi", "x6", 20000, 3.5, "oras");
+//    cin >> *a;
+  //  cout << *a;
+Comun* b = new Comun(*a);
+    return 0;
+}
+
