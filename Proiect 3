@@ -614,25 +614,25 @@ public:
             stoc++;
         }
     }
- /*   Vanzare(Vanzare& a)
+    Vanzare(const Vanzare& a)
     {
         ls = a.ls;
         lv = a.lv;
         stoc = a.ls.size();
         vandute = a.lv.size();
-    }*/
+    }
     ~Vanzare()
     {
         delete[] v;
     };
 
-   /* void operator =(Vanzare& a)
+    void operator =(Vanzare& a)
     {
         ls = a.ls;
         lv = a.lv;
         stoc = a.ls.size();
         vandute = a.lv.size();
-    }*/
+    }
     void citire(istream& in)
     {
         cout << "Introduceti numarul de masini in stoc: ";
@@ -680,29 +680,46 @@ public:
         ob.afisare(out);
         return out;
     }
-   /* void sell(int n)
+    void sell(int n)
     {
-        int poz = 0;
+        int poz = 0, ok = 0;
         vector <T> lsn;
         for(auto it:ls)
         {
-            if(poz == n - 1)
+            poz++;
+            if(poz == n && ok == 0)
             {
                 lv.push_back(it);
                 vandute++;
-                // cout << it << " ";
-                // ls.erase(&it);
                 stoc--;
+                ok = 1;
             }
             else
                 lsn.push_back(it);
-            poz++;
         }
-       // lv = lsn;
-    }*/
-    void operator -=(T ob)
+        ls = lsn;
+    }
+    void sell(string s1, string s2)
     {
-       // sell(ob);
+        vector <T> lsn;
+        int ok = 0;
+        for(auto it:ls)
+        {
+            if(it.getMarca() == s1 && it.getNume() == s2 && ok == 0)
+            {
+                lv.push_back(it);
+                vandute++;
+                stoc--;
+                ok = 1;
+            }
+            else
+                lsn.push_back(it);
+        }
+        ls = lsn;
+    }
+    void operator -=(Vanzare& ob)
+    {
+
     }
     static void masiniStoc()
     {
@@ -722,12 +739,12 @@ template <class T> int Vanzare<T>::vandute = 0;
 int main()
 {
     Vanzare <Mini> x;
-  // Mini x;
+    // Mini x;
     cin>>x;
     cout<<x;
-    //cout<<"\n--------------------\n";
- //   x.sell(1);
-  //  cout<<x;
+    cout<<"\n--------------------\n";
+    cout<<"\n--------------------\n";
+    cout<<x;
     //  cout<<x;
     // x.sell("audi", "a6");
     //cout<<x;
