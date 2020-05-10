@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -8,26 +9,44 @@ class Automobil
 protected:
     string marca;
     string nume;
-    float pret;
+    double pret;
 
 public:
     Automobil();
-    Automobil(string, string, float);
+    Automobil(string, string, double);
     Automobil(const Automobil&);
-    virtual ~Automobil(){};
+    virtual ~Automobil() {};
 
-    string getMarca(){return marca;};
-    string getNume() {return nume;};
-    float getPret() {return pret;};
-    void setMarca(string marca){this -> marca = marca;};
-    void setNume(string nume){this -> nume = nume;};
-    void setPret(float pret){this -> pret = pret;};
+    string getMarca()
+    {
+        return marca;
+    };
+    string getNume()
+    {
+        return nume;
+    };
+    double getPret()
+    {
+        return pret;
+    };
+    void setMarca(string marca)
+    {
+        this -> marca = marca;
+    };
+    void setNume(string nume)
+    {
+        this -> nume = nume;
+    };
+    void setPret(double pret)
+    {
+        this -> pret = pret;
+    };
 
     virtual void citire(istream&);
     virtual void afisare(ostream&);
     friend istream & operator >> (istream &, Automobil&);
-	friend ostream & operator << (ostream &, Automobil&);
-	void operator =(Automobil&);
+    friend ostream & operator << (ostream &, Automobil&);
+    void operator =(const Automobil&);
 };
 
 Automobil::Automobil()
@@ -36,7 +55,7 @@ Automobil::Automobil()
     nume = "";
     pret = 0;
 }
-Automobil::Automobil(string marca, string nume, float pret)
+Automobil::Automobil(string marca, string nume, double pret)
 {
     this -> marca = marca;
     this -> nume = nume;
@@ -60,10 +79,11 @@ void Automobil::citire(istream& in)
     getline(in, s2);
     nume = s2;
 
-    float n;
+    double n;
     cout << "Pret: ";
     in >> n;
     pret = n;
+    in.get();
 }
 void Automobil::afisare(ostream& out)
 {
@@ -72,96 +92,659 @@ void Automobil::afisare(ostream& out)
 }
 istream & operator >> (istream& in, Automobil& a)
 {
-	a.citire(in);
-	return in;
+    a.citire(in);
+    return in;
 }
 ostream & operator << (ostream& out, Automobil& a)
 {
-	a.afisare(out);
-	return out;
+    a.afisare(out);
+    return out;
 }
-void Automobil::operator =(Automobil& a)
+void Automobil::operator =(const Automobil& a)
 {
     marca = a.marca;
     nume = a.nume;
-    pret = a.pret; cout << "assig";
+    pret = a.pret;
 }
 
 
 ///-------------------------------------------------------
 
 
-class Comun: public Automobil
+class Masina: public Automobil
 {
 protected:
-    float lungime;
+    double lungime;
     string tip; //de oras sau de drum lung
 
 public:
-    Comun();
-    Comun(string, string, float, float, string);
-    Comun(const Comun&);
-    virtual ~Comun(){};
+    Masina();
+    Masina(string, string, double, double, string);
+    Masina(const Masina&);
+    virtual ~Masina() {};
 
-    float getLungime() {return lungime;};
-    string getTip() {return tip;};
-    void setLungime(float lungime) {this -> lungime = lungime;};
-    void setTip(string tip) {this -> tip = tip;};
+    double getLungime()
+    {
+        return lungime;
+    };
+    string getTip()
+    {
+        return tip;
+    };
+    void setLungime(double lungime)
+    {
+        this -> lungime = lungime;
+    };
+    void setTip(string tip)
+    {
+        this -> tip = tip;
+    };
 
     virtual void citire(istream&);
     virtual void afisare(ostream&);
-    void operator =(Comun&);
+    void operator =(const Masina&);
 };
 
-Comun::Comun(): Automobil()
+Masina::Masina(): Automobil()
 {
     lungime = 0;
     tip = "";
 }
-Comun::Comun(string s1, string s2, float n, float lungime, string tip): Automobil(s1, s2, n)
+Masina::Masina(string s1, string s2, double n, double lungime, string tip): Automobil(s1, s2, n)
 {
     this -> lungime = lungime;
     this -> tip = tip;
 }
-Comun::Comun(const Comun& c)
+Masina::Masina(const Masina& c): Automobil(c)
 {
     lungime = c.lungime;
     tip = c.tip;
 }
-void Comun::citire(istream& in)
+void Masina::citire(istream& in)
 {
     Automobil::citire(in);
 
-    float len;
+    double len;
     cout << "Lungime automobil: ";
     in >> len;
     lungime = len;
 
     in.get();
     string s;
-    cout << "Tip masina (de oras sau de drum lung): ";
+    cout << "Tip masina('oras' sau 'drum_lung'): ";
     getline(in, s);
     tip = s;
 }
-void Comun::afisare(ostream& out)
+void Masina::afisare(ostream& out)
 {
     Automobil::afisare(out);
     cout << "Lungime automobil: " << lungime << "\n";
     cout << "Tip masina: " << tip << "\n";
 }
-void Comun::operator =(const Comun& c)
+void Masina::operator =(const Masina& c)
 {
+    Automobil::operator=(c);
     lungime = c.lungime;
     tip = c.tip;
-    cout << "assig";
 }
+
+
+///------------------------------------------------------------
+
+
+class Mini: public Masina
+{
+public:
+    Mini();
+    Mini(string, string, double, double, string);
+    Mini(const Mini&);
+    ~Mini() {};
+
+    void citire(istream&);
+    void afisare(ostream&);
+    void operator =(const Mini& m)
+    {
+        Masina::operator=(m);
+    };
+};
+
+Mini::Mini(): Masina() {}
+Mini::Mini(string s1, string s2, double n1, double n2, string s3): Masina(s1, s2, n1, n2, s3)
+{
+    try
+    {
+        if(n2 < 0 || n2 > 4)
+            throw 1;
+        else if(s3.compare("oras"))
+            throw 2;
+    }
+    catch(int i)
+    {
+        cout << "Categoria MINI contine doar masini sub 4 metri lungime, de oras.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+Mini::Mini(const Mini& m): Masina(m) {}
+void Mini::citire(istream& in)
+{
+    cout << "Categoria MINI contine masini de oras (tipul masinii), sub 4m lungime.\n";
+    Masina::citire(in);
+
+    try
+    {
+        if(lungime < 0 || lungime > 4)
+            throw 1;
+        else if(tip != "oras")
+            throw 2;
+    }
+    catch(int i)
+    {
+        cout << "Categoria MINI contine doar masini sub 4 metri lungime.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+void Mini::afisare(ostream& out)
+{
+    cout << "Categorie masina: MINI \n";
+    Masina::afisare(out);
+}
+
+
+///------------------------------------------------------------
+
+
+class Mica: public Masina
+{
+public:
+    Mica();
+    Mica(string, string, double, double, string);
+    Mica(const Mica&);
+    ~Mica() {};
+
+    void citire(istream&);
+    void afisare(ostream&);
+    void operator =(Mica& m)
+    {
+        Mica::operator=(m);
+    };
+};
+
+Mica::Mica(): Masina() {}
+Mica::Mica(string s1, string s2, double n1, double n2, string s3): Masina(s1, s2, n1, n2, s3)
+{
+    try
+    {
+        if(n2 < 3.85 || n2 > 4.1)
+            throw 1;
+        else if(s3 != "oras")
+            throw 2;
+    }
+    catch(int i)
+    {
+        cout << "Categoria MICA contine doar masini cu lungime intre 3.85 si 4.1 metri, de oras.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+Mica::Mica(const Mica& m): Masina(m) {}
+void Mica::citire(istream& in)
+{
+    cout << "Categoria MICA contine masini de oras (tipul masinii), cu lungime intre 3.85 si 4.1 metri.\n";
+    Masina::citire(in);
+
+    try
+    {
+        if(lungime < 3.85 || lungime > 4.1)
+            throw 1;
+        else if(tip != "oras")
+            throw 2;
+    }
+    catch(int i)
+    {
+        cout << "Categoria MICA contine doar masini cu lungime intre 3.85 si 4.1 metri, de oras.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+void Mica::afisare(ostream& out)
+{
+    cout << "Categorie masina: MICA \n";
+    Masina::afisare(out);
+}
+
+
+///-------------------------------------------------------------
+
+
+class Compacta: public Masina
+{
+private:
+    string model;
+
+public:
+    Compacta();
+    Compacta(string, string, string, double, double, string);
+    Compacta(const Compacta&);
+    ~Compacta() {};
+
+    void citire(istream&);
+    void afisare(ostream&);
+    void operator =(Compacta&);
+};
+
+Compacta::Compacta(): Masina()
+{
+    model = "";
+}
+Compacta::Compacta(string s, string s1, string s2, double n1, double n2, string s3): Masina(s1, s2, n1, n2, s3)
+{
+    model = s;
+    try
+    {
+        if(n2 < 4.2 || n2 > 4.5)
+            throw 1;
+        else if(s3 != "oras" && s3 != "drum_lung")
+            throw 2;
+        else if(model != "hatchback" && model != "sedan" && model != "combi")
+            throw 3;
+    }
+    catch(int i)
+    {
+        cout << "Categoria COMPACTA contine doar masini cu lungime intre 4.2 si 4.5 metri, de oras/drum lung, hatchback, combi sau sedan.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+Compacta::Compacta(const Compacta& m): Masina(m)
+{
+    model = m.model;
+}
+void Compacta::citire(istream& in)
+{
+    cout << "Categoria COMPACTA contine masini de oras/drum lung (tipul masinii), cu lungime intre 4.2 si 4.5 metri, model hatchback, combi sau sedan.\n";
+    Masina::citire(in);
+
+    cout << "Model (hatchback/combi/sedan): ";
+    string s;
+    getline(in, s);
+    model = s;
+
+    try
+    {
+        if(lungime > 4.5 || lungime < 4.2)
+            throw 1;
+        else if(tip != "oras" && tip != "drum_lung")
+            throw 2;
+        else if(model != "hatchback" && model != "combi" && model != "sedan")
+            throw 3;
+    }
+    catch(int i)
+    {
+        cout << "Categoria COMPACTA contine doar masini cu lungime intre 4.2 si 4.5 metri, de oras/drum lung, model hatchback, combi sau sedan.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+void Compacta::afisare(ostream& out)
+{
+    cout << "Categorie masina: COMPACTA \n";
+    Masina::afisare(out);
+    cout << "Model: " << model;
+}
+void Compacta::operator =(Compacta& m)
+{
+    Compacta::operator=(m);
+    model = m.model;
+};
+
+
+///-------------------------------------------------------------
+
+
+class Monovolume: public Automobil
+{
+private:
+    int nr_pers;
+    bool stadiu; //nou sau second-hand
+    int ani_vechime;
+    double discount;
+    string luna;
+    double pondere;
+
+public:
+    Monovolume();
+    Monovolume(int, string, string, double);
+    Monovolume(int, int, string, double, string, string, double);
+    Monovolume(const Monovolume&);
+    ~Monovolume() {};
+
+    void citire(istream&);
+    void afisare(ostream&);
+
+};
+
+Monovolume::Monovolume(): Automobil()
+{
+    nr_pers = 0;
+    ani_vechime = 0;
+    discount = 0;
+    luna = "";
+    pondere = 0;
+}
+Monovolume::Monovolume(int nr_pers, string s1, string s2, double n): Automobil(s1, s2, n) ///monovolum nou
+{
+    this -> nr_pers = nr_pers;
+    try
+    {
+        if(nr_pers > 7 || nr_pers < 5)
+            throw 1;
+    }
+    catch(int i)
+    {
+        cout << "Monovolumul poate transporta maxim 7 persoane. \n";
+        exit(EXIT_FAILURE);
+    }
+
+    ani_vechime = 0;
+    stadiu = 1;
+    luna = "";
+    pondere = 0;
+    discount = 0;
+}
+Monovolume::Monovolume(int nr_pers, int ani_vechime, string luna, double pondere, string s1, string s2, double n): Automobil(s1, s2, n)
+{
+    this -> nr_pers = nr_pers;
+    try
+    {
+        if(nr_pers > 7 || nr_pers < 5)
+            throw 1;
+    }
+    catch(int i)
+    {
+        cout << "Monovolumul poate transporta maxim 7 persoane. \n";
+        exit(EXIT_FAILURE);
+    }
+
+    this -> ani_vechime = ani_vechime;
+
+    if(ani_vechime != 0)
+        stadiu = 0; //second-hand
+    else
+        stadiu = 1; //nou
+
+
+    this -> luna = luna;
+    try
+    {
+        if(luna != "ianuarie" && luna != "februarie" && luna != "martie" && luna != "aprilie"
+                && luna != "mai" && luna != "iunie" && luna != "iulie" && luna != "august"
+                && luna != "septembrie" && luna != "octombrie" && luna != "noimebrie" && luna != "decemrbrie")
+            throw 1;
+    }
+    catch(int i)
+    {
+        cout << "Luna invalida. \n";
+        exit(EXIT_FAILURE);
+    }
+
+
+    this -> pondere = pondere;
+
+    if(luna == "iunie" || luna == "iulie" || luna == "august")
+        discount = 0.1 * pret;
+    else
+        discount = ani_vechime * pondere;
+}
+Monovolume::Monovolume(const Monovolume& m): Automobil(m)
+{
+    nr_pers = m.nr_pers;
+    stadiu = m.stadiu;
+    ani_vechime = m.ani_vechime;
+    discount = m.discount;
+    luna = m.luna;
+    pondere = m.pondere;
+}
+void Monovolume::citire(istream& in)
+{
+    Automobil::citire(in);
+
+    cout << "Numar persoane: ";
+    int n;
+    in >> n;
+    nr_pers = n;
+    in.get();
+    try
+    {
+        if(nr_pers > 7 || nr_pers < 5)
+            throw 1;
+    }
+    catch(int i)
+    {
+        cout << "Monovolumul poate transporta maxim 7 persoane. \n";
+        exit(EXIT_FAILURE);
+    }
+
+
+    cout << "Numar ani vechime: ";
+    int n1;
+    in >> n1;
+    ani_vechime = n1;
+    in.get();
+
+
+    if(ani_vechime != 0)
+    {
+        stadiu = 0;
+
+        cout << "Luna: ";
+        string s;
+        getline(in, s);
+        luna = s;
+        try
+        {
+            if(luna != "ianuarie" && luna != "februarie" && luna != "martie" && luna != "aprilie"
+                    && luna != "mai" && luna != "iunie" && luna != "iulie" && luna != "august"
+                    && luna != "septembrie" && luna != "octombrie" && luna != "noimebrie" && luna != "decemrbrie")
+                throw 1;
+        }
+        catch(int i)
+        {
+            cout << "Luna invalida. \n";
+            exit(EXIT_FAILURE);
+        }
+
+
+        if(luna == "iunie" || luna == "iulie" || luna == "august")
+            discount = 0.1 * pret;
+        else
+        {
+            cout << "Pondere: ";
+            double p;
+            in >> p;
+            pondere = p;
+            discount = pondere * ani_vechime;
+        }
+        pret = pret - discount;
+    }
+    else
+        stadiu = 1;
+}
+void Monovolume::afisare(ostream& out)
+{
+    Automobil::afisare(out);
+
+    cout << "Numar persoane: " << nr_pers << "\n";
+    cout << "Numar ani vechime: " << ani_vechime << "\n";
+
+    if(stadiu == 0)
+    {
+        cout << "Monovolum second-hand\n";
+        cout << "Luna: " << luna << "\n";
+
+        if(luna != "iunie" && luna != "iulie" && luna != "august")
+            cout << "Pondere: " << pondere << "\n";
+
+        cout << "Discount: " << discount << " euro\n";
+    }
+    else
+        cout << "Monovolum nou\n";
+}
+
+
+///--------------------------------------------------------------
+
+
+template <class T> class Vanzare
+{
+private:
+    T* v;
+    static int stoc;
+    static int vandute;
+    vector <T> ls; //lista automobile in stoc
+    vector <T> lv; //lista automobile vandute
+
+public:
+    Vanzare() {};
+    Vanzare(T ob)
+    {
+        ls.push_back(ob);
+        stoc++;
+    };
+    Vanzare(T* ob, int n)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            ls.push_back(ob[i]);
+            stoc++;
+        }
+    }
+ /*   Vanzare(Vanzare& a)
+    {
+        ls = a.ls;
+        lv = a.lv;
+        stoc = a.ls.size();
+        vandute = a.lv.size();
+    }*/
+    ~Vanzare()
+    {
+        delete[] v;
+    };
+
+   /* void operator =(Vanzare& a)
+    {
+        ls = a.ls;
+        lv = a.lv;
+        stoc = a.ls.size();
+        vandute = a.lv.size();
+    }*/
+    void citire(istream& in)
+    {
+        cout << "Introduceti numarul de masini in stoc: ";
+        int nr;
+        in >> nr;
+        stoc = nr;
+        in.get();
+
+        v = new T[nr];
+        cout << "Introduceti automobilele din stoc:\n";
+        for(int i = 0; i < nr; i++)
+        {
+            in >> v[i];
+            ls.push_back(v[i]);
+            cout << "\n";
+        }
+    }
+    friend istream& operator >>(istream& in, Vanzare<T> &ob)
+    {
+        ob.citire(in);
+        return in;
+    }
+    void afisare(ostream& out) const
+    {
+        if(stoc != 0)
+        {
+            out << "Automobile in stoc:\n";
+            for(auto it: ls)
+                out << it << "\n";
+        }
+        else
+            out << "Nu sunt masini in stoc.";
+
+        if(vandute != 0)
+        {
+            out << "Automobile vandute:\n";
+            for(auto it: lv)
+                out << it << "\n";
+        }
+        else
+            out << "Nu s-au vandut masini momentan.";
+    }
+    friend ostream& operator <<(ostream& out, const Vanzare<T> &ob)
+    {
+        ob.afisare(out);
+        return out;
+    }
+   /* void sell(int n)
+    {
+        int poz = 0;
+        vector <T> lsn;
+        for(auto it:ls)
+        {
+            if(poz == n - 1)
+            {
+                lv.push_back(it);
+                vandute++;
+                // cout << it << " ";
+                // ls.erase(&it);
+                stoc--;
+            }
+            else
+                lsn.push_back(it);
+            poz++;
+        }
+       // lv = lsn;
+    }*/
+    void operator -=(T ob)
+    {
+       // sell(ob);
+    }
+    static void masiniStoc()
+    {
+        cout << stoc;
+    }
+    static void masiniVandute()
+    {
+        cout << vandute;
+    }
+};
+
+template <class T> int Vanzare<T>::stoc = 0;
+template <class T> int Vanzare<T>::vandute = 0;
+
+///---------------------------------------------------------------
 
 int main()
 {
-    Comun* a = new Comun("audi", "x6", 20000, 3.5, "oras");
-//    cin >> *a;
-  //  cout << *a;
-Comun* b = new Comun(*a);
+    Vanzare <Mini> x;
+  // Mini x;
+    cin>>x;
+    cout<<x;
+    //cout<<"\n--------------------\n";
+ //   x.sell(1);
+  //  cout<<x;
+    //  cout<<x;
+    // x.sell("audi", "a6");
+    //cout<<x;
+
+
+    // Automobil* a = new Automobil();
+    // Mini* a = new Mini();
+    // Mica* a = new Mica();
+    // Compacta* a = new Compacta();
+    //Monovolume* a = n
+    // Monovolume();
+
+    /* cin >> *a;
+     cout << "\n\n";
+     cout << *a;
+     cout << "\n\n";*/
+
     return 0;
 }
 
