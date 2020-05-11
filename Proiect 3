@@ -17,15 +17,15 @@ public:
     Automobil(const Automobil&);
     virtual ~Automobil() {};
 
-    string getMarca()
+    string getMarca() const
     {
         return marca;
     };
-    string getNume()
+    string getNume() const
     {
         return nume;
     };
-    double getPret()
+    double getPret() const
     {
         return pret;
     };
@@ -43,9 +43,9 @@ public:
     };
 
     virtual void citire(istream&);
-    virtual void afisare(ostream&);
+    virtual void afisare(ostream&) const;
     friend istream & operator >> (istream &, Automobil&);
-    friend ostream & operator << (ostream &, Automobil&);
+    friend ostream & operator << (ostream &, const Automobil&);
     void operator =(const Automobil&);
 };
 
@@ -85,7 +85,7 @@ void Automobil::citire(istream& in)
     pret = n;
     in.get();
 }
-void Automobil::afisare(ostream& out)
+void Automobil::afisare(ostream& out) const
 {
     cout << "Marca si nume automobil: " << marca << " " << nume << "\n";
     cout << "Pret automobil: " << pret << " euro" << "\n";
@@ -95,7 +95,7 @@ istream & operator >> (istream& in, Automobil& a)
     a.citire(in);
     return in;
 }
-ostream & operator << (ostream& out, Automobil& a)
+ostream & operator << (ostream& out, const Automobil& a)
 {
     a.afisare(out);
     return out;
@@ -123,11 +123,11 @@ public:
     Masina(const Masina&);
     virtual ~Masina() {};
 
-    double getLungime()
+    double getLungime() const
     {
         return lungime;
     };
-    string getTip()
+    string getTip() const
     {
         return tip;
     };
@@ -141,7 +141,7 @@ public:
     };
 
     virtual void citire(istream&);
-    virtual void afisare(ostream&);
+    virtual void afisare(ostream&) const;
     void operator =(const Masina&);
 };
 
@@ -175,7 +175,7 @@ void Masina::citire(istream& in)
     getline(in, s);
     tip = s;
 }
-void Masina::afisare(ostream& out)
+void Masina::afisare(ostream& out) const
 {
     Automobil::afisare(out);
     cout << "Lungime automobil: " << lungime << "\n";
@@ -201,7 +201,7 @@ public:
     ~Mini() {};
 
     void citire(istream&);
-    void afisare(ostream&);
+    void afisare(ostream&) const;
     void operator =(const Mini& m)
     {
         Masina::operator=(m);
@@ -243,7 +243,7 @@ void Mini::citire(istream& in)
         exit(EXIT_FAILURE);
     }
 }
-void Mini::afisare(ostream& out)
+void Mini::afisare(ostream& out) const
 {
     cout << "Categorie masina: MINI \n";
     Masina::afisare(out);
@@ -262,8 +262,8 @@ public:
     ~Mica() {};
 
     void citire(istream&);
-    void afisare(ostream&);
-    void operator =(Mica& m)
+    void afisare(ostream&) const;
+    void operator =(const Mica& m)
     {
         Mica::operator=(m);
     };
@@ -304,7 +304,7 @@ void Mica::citire(istream& in)
         exit(EXIT_FAILURE);
     }
 }
-void Mica::afisare(ostream& out)
+void Mica::afisare(ostream& out) const
 {
     cout << "Categorie masina: MICA \n";
     Masina::afisare(out);
@@ -326,8 +326,8 @@ public:
     ~Compacta() {};
 
     void citire(istream&);
-    void afisare(ostream&);
-    void operator =(Compacta&);
+    void afisare(ostream&) const;
+    void operator =(const Compacta&);
 };
 
 Compacta::Compacta(): Masina()
@@ -381,13 +381,13 @@ void Compacta::citire(istream& in)
         exit(EXIT_FAILURE);
     }
 }
-void Compacta::afisare(ostream& out)
+void Compacta::afisare(ostream& out) const
 {
     cout << "Categorie masina: COMPACTA \n";
     Masina::afisare(out);
     cout << "Model: " << model;
 }
-void Compacta::operator =(Compacta& m)
+void Compacta::operator =(const Compacta& m)
 {
     Compacta::operator=(m);
     model = m.model;
@@ -414,8 +414,14 @@ public:
     Monovolume(const Monovolume&);
     ~Monovolume() {};
 
+    bool getStadiu() const
+    {
+        return stadiu;
+    };
+
     void citire(istream&);
-    void afisare(ostream&);
+    void afisare(ostream&) const;
+    void operator =(const Monovolume&);
 
 };
 
@@ -424,7 +430,7 @@ Monovolume::Monovolume(): Automobil()
     nr_pers = 0;
     ani_vechime = 0;
     discount = 0;
-    luna = "";
+    luna =
     pondere = 0;
 }
 Monovolume::Monovolume(int nr_pers, string s1, string s2, double n): Automobil(s1, s2, n) ///monovolum nou
@@ -437,7 +443,7 @@ Monovolume::Monovolume(int nr_pers, string s1, string s2, double n): Automobil(s
     }
     catch(int i)
     {
-        cout << "Monovolumul poate transporta maxim 7 persoane. \n";
+        cout << "Monovolumul poate transporta intre 5 si 7 persoane. \n";
         exit(EXIT_FAILURE);
     }
 
@@ -457,7 +463,7 @@ Monovolume::Monovolume(int nr_pers, int ani_vechime, string luna, double pondere
     }
     catch(int i)
     {
-        cout << "Monovolumul poate transporta maxim 7 persoane. \n";
+        cout << "Monovolumul poate transporta intre 5 si 7 persoane. \n";
         exit(EXIT_FAILURE);
     }
 
@@ -516,7 +522,7 @@ void Monovolume::citire(istream& in)
     }
     catch(int i)
     {
-        cout << "Monovolumul poate transporta maxim 7 persoane. \n";
+        cout << "Monovolumul poate transporta intre 5 si 7 persoane. \n";
         exit(EXIT_FAILURE);
     }
 
@@ -565,7 +571,7 @@ void Monovolume::citire(istream& in)
     else
         stadiu = 1;
 }
-void Monovolume::afisare(ostream& out)
+void Monovolume::afisare(ostream& out) const
 {
     Automobil::afisare(out);
 
@@ -585,6 +591,16 @@ void Monovolume::afisare(ostream& out)
     else
         cout << "Monovolum nou\n";
 }
+void Monovolume::operator =(const Monovolume& m)
+{
+    Automobil::operator=(m);
+    nr_pers = m.nr_pers;
+    stadiu = m.stadiu;
+    ani_vechime = m.ani_vechime;
+    discount = m.discount;
+    luna = m.luna;
+    pondere = m.pondere;
+}
 
 
 ///--------------------------------------------------------------
@@ -593,45 +609,45 @@ void Monovolume::afisare(ostream& out)
 template <class T> class Vanzare
 {
 private:
-    T* v;
     static int stoc;
     static int vandute;
-    vector <T> ls; //lista automobile in stoc
-    vector <T> lv; //lista automobile vandute
+    vector <T> vec_stoc; //lista automobile in stoc
+    vector <T> vec_vandute; //lista automobile vandute
 
 public:
     Vanzare() {};
     Vanzare(T ob)
     {
-        ls.push_back(ob);
+        vec_stoc.push_back(ob);
         stoc++;
     };
     Vanzare(T* ob, int n)
     {
         for(int i = 0; i < n; i++)
         {
-            ls.push_back(ob[i]);
+            vec_stoc.push_back(ob[i]);
             stoc++;
         }
     }
     Vanzare(const Vanzare& a)
     {
-        ls = a.ls;
-        lv = a.lv;
-        stoc = a.ls.size();
-        vandute = a.lv.size();
+        vec_stoc = a.vec_stoc;
+        vec_vandute = a.vec_vandute;
+        stoc = a.vec_stoc.size();
+        vandute = a.vec_vandute.size();
     }
     ~Vanzare()
     {
-        delete[] v;
+        vec_stoc.clear();
+        vec_vandute.clear();
     };
 
-    void operator =(Vanzare& a)
+    void operator =(const Vanzare& a)
     {
-        ls = a.ls;
-        lv = a.lv;
-        stoc = a.ls.size();
-        vandute = a.lv.size();
+        vec_stoc = a.vec_stoc;
+        vec_vandute = a.vec_vandute;
+        stoc = a.vec_stoc.size();
+        vandute = a.vec_vandute.size();
     }
     void citire(istream& in)
     {
@@ -641,12 +657,12 @@ public:
         stoc = nr;
         in.get();
 
-        v = new T[nr];
         cout << "Introduceti automobilele din stoc:\n";
         for(int i = 0; i < nr; i++)
         {
-            in >> v[i];
-            ls.push_back(v[i]);
+            T elem;
+            in >> elem;
+            vec_stoc.push_back(elem);
             cout << "\n";
         }
     }
@@ -660,8 +676,8 @@ public:
         if(stoc != 0)
         {
             out << "Automobile in stoc:\n";
-            for(auto it: ls)
-                out << it << "\n";
+            for(auto it: vec_stoc)
+                out << it.getMarca() << " " << it.getNume() << "\n";
         }
         else
             out << "Nu sunt masini in stoc.";
@@ -669,8 +685,8 @@ public:
         if(vandute != 0)
         {
             out << "Automobile vandute:\n";
-            for(auto it: lv)
-                out << it << "\n";
+            for(auto it: vec_vandute)
+                out << it.getMarca() << " " << it.getNume() << "\n";
         }
         else
             out << "Nu s-au vandut masini momentan.";
@@ -683,43 +699,43 @@ public:
     void sell(int n)
     {
         int poz = 0, ok = 0;
-        vector <T> lsn;
-        for(auto it:ls)
+        vector <T> vec_aux;
+        for(auto it:vec_stoc)
         {
             poz++;
             if(poz == n && ok == 0)
             {
-                lv.push_back(it);
+                vec_vandute.push_back(it);
                 vandute++;
                 stoc--;
                 ok = 1;
             }
             else
-                lsn.push_back(it);
+                vec_aux.push_back(it);
         }
-        ls = lsn;
+        vec_stoc = vec_aux;
     }
     void sell(string s1, string s2)
     {
-        vector <T> lsn;
+        vector <T> vec_aux;
         int ok = 0;
-        for(auto it:ls)
+        for(auto it:vec_stoc)
         {
             if(it.getMarca() == s1 && it.getNume() == s2 && ok == 0)
             {
-                lv.push_back(it);
+                vec_vandute.push_back(it);
                 vandute++;
                 stoc--;
                 ok = 1;
             }
             else
-                lsn.push_back(it);
+                vec_aux.push_back(it);
         }
-        ls = lsn;
+        vec_stoc = vec_aux;
     }
-    void operator -=(Vanzare& ob)
+    void operator -=(const T& ob)
     {
-
+        sell(ob.getMarca(), ob.getNume());
     }
     static void masiniStoc()
     {
@@ -734,33 +750,149 @@ public:
 template <class T> int Vanzare<T>::stoc = 0;
 template <class T> int Vanzare<T>::vandute = 0;
 
+
+///---------------------------------------------------------------
+
+
+template <> class Vanzare <Monovolume>
+{
+private:
+    vector <Monovolume> vec_stoc;
+    vector <Monovolume> vec_vandute;
+    static int nr_stoc;
+    static int nr_vandute;
+
+public:
+    Vanzare() {};
+    Vanzare(Monovolume ob)
+    {
+        vec_stoc.push_back(ob);
+        nr_stoc++;
+    }
+    Vanzare(Monovolume* v, int n)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            vec_stoc.push_back(v[i]);
+            nr_stoc++;
+        }
+    }
+    ~Vanzare()
+    {
+        vec_stoc.clear();
+        vec_vandute.clear();
+    }
+
+    void sell(string s1, string s2, bool b)
+    {
+        vector <Monovolume> vec_aux;
+        int ok = 0;
+        for(auto it:vec_stoc)
+        {
+            if(it.getMarca() == s1 && it.getNume() == s2 && it.getStadiu() == b && ok == 0)
+            {
+                vec_vandute.push_back(it);
+                nr_vandute++;
+                nr_stoc--;
+                ok = 1;
+            }
+            else
+                vec_aux.push_back(it);
+        }
+        vec_stoc = vec_aux;
+    }
+    void operator -=(const Monovolume& m)
+    {
+        sell(m.getMarca(), m.getNume(), m.getStadiu());
+    }
+
+    void citire(istream& in)
+    {
+        cout << "Introduceti numarul de monovolume in stoc: ";
+        int nr;
+        in >> nr;
+        nr_stoc = nr;
+        in.get();
+
+        cout << "Introduceti monovolumele din stoc:\n";
+        for(int i = 0; i < nr; i++)
+        {
+            Monovolume elem;
+            in >> elem;
+            vec_stoc.push_back(elem);
+            cout << "\n";
+        }
+    }
+    friend istream& operator >>(istream& in, Vanzare<Monovolume> &ob)
+    {
+        ob.citire(in);
+        return in;
+    }
+    void afisare(ostream& out) const
+    {
+        if(nr_stoc != 0)
+        {
+            out << "Monovolume in stoc:\n";
+            for(auto it: vec_stoc)
+            {
+                out << it.getMarca() << " " << it.getNume();
+                if(it.getStadiu() == 0)
+                    out << ", second-hand\n";
+                else
+                    out << ", nou\n";
+            }
+        }
+        else
+            out << "Nu sunt monovolume in stoc.";
+
+        if(nr_vandute != 0)
+        {
+            out << "Monovolume vandute:\n";
+            for(auto it: vec_vandute)
+            {
+                out << it.getMarca() << " " << it.getNume();
+                if(it.getStadiu() == 0)
+                    out << ", second-hand\n";
+                else
+                    out << ", nou\n";
+            }
+        }
+        else
+            out << "Nu s-au vandut monovolume momentan.";
+    }
+    friend ostream& operator <<(ostream& out, const Vanzare<Monovolume> &ob)
+    {
+        ob.afisare(out);
+        return out;
+    }
+
+
+};
+
+template <> int Vanzare<Monovolume>::nr_stoc = 0;
+template <> int Vanzare<Monovolume>::nr_vandute = 0;
+
+
 ///---------------------------------------------------------------
 
 int main()
 {
     Vanzare <Mini> x;
-    // Mini x;
-    cin>>x;
-    cout<<x;
-    cout<<"\n--------------------\n";
-    cout<<"\n--------------------\n";
-    cout<<x;
-    //  cout<<x;
-    // x.sell("audi", "a6");
-    //cout<<x;
+    cin >> x;
+    cout << x;
 
 
-    // Automobil* a = new Automobil();
-    // Mini* a = new Mini();
-    // Mica* a = new Mica();
-    // Compacta* a = new Compacta();
-    //Monovolume* a = n
-    // Monovolume();
+    /* Vanzare <Mini> x;
+     Mini y;
+     cin>>x;
+     cout<<x;
+     cout<<"\n--------------------\n";
+     cin >> y;
+     cout << y;
+     cout<<"\n--------------------\n";
+     x -= y;
+     cout<<x;*/
 
-    /* cin >> *a;
-     cout << "\n\n";
-     cout << *a;
-     cout << "\n\n";*/
 
     return 0;
 }
