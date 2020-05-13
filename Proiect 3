@@ -1,9 +1,10 @@
+/// Nita Anca, Grupa 211
+
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace std;
-
 
 /**
 Automobil -> Masina -> Mini
@@ -885,7 +886,7 @@ template <> int Vanzare<Monovolume>::nr_vandute = 0;
 ///---------------------------------------------------------------
 
 ///citirea si memorarea unui obiect
-void tip(Automobil* a, int i)
+void tip(Automobil* &a, int i)
 {
     string nume;
     cout << "Introduceti tipul automobilului (mini/mica/compacta/monovolum) no. " << i + 1 << ": ";
@@ -936,7 +937,7 @@ void tip(Automobil* a, int i)
 ///---------------------------------------------------------------
 
 ///citirea, memorarea si afisarea a n obiecte
-void memorare(Automobil** v, int n)
+void memorare(Automobil** &v, int n)
 {
     v = new Automobil*[n];
     for(int i = 0; i < n; i++)
@@ -948,7 +949,7 @@ void memorare(Automobil** v, int n)
     //for(int i = 0; i < n; i++)
     //  cout << *v[i] << "\n";
 
-    delete [] v;
+    //delete [] v;
 }
 
 
