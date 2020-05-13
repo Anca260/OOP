@@ -4,6 +4,15 @@
 
 using namespace std;
 
+
+/**
+Automobil -> Masina -> Mini
+                    -> Mica
+                    -> Compacta
+          -> Monovolume
+
+*/
+
 class Automobil
 {
 protected:
@@ -431,7 +440,7 @@ Monovolume::Monovolume(): Automobil()
     ani_vechime = 0;
     discount = 0;
     luna =
-    pondere = 0;
+        pondere = 0;
 }
 Monovolume::Monovolume(int nr_pers, string s1, string s2, double n): Automobil(s1, s2, n) ///monovolum nou
 {
@@ -875,12 +884,235 @@ template <> int Vanzare<Monovolume>::nr_vandute = 0;
 
 ///---------------------------------------------------------------
 
+///citirea si memorarea unui obiect
+void tip(Automobil* a, int i)
+{
+    string nume;
+    cout << "Introduceti tipul automobilului (mini/mica/compacta/monovolum) no. " << i + 1 << ": ";
+    cin >> nume;
+
+    try
+    {
+        if(nume == "mini")
+        {
+            cin.get();
+            a = new Mini();
+            cin >> *a;
+        }
+        else if(nume == "mica")
+        {
+            cin.get();
+            a = new Mica();
+            cin >> *a;
+        }
+        else if(nume == "compacta")
+        {
+            cin.get();
+            a = new Compacta();
+            cin >> *a;
+        }
+        else if(nume == "monovolum")
+        {
+            cin.get();
+            a = new Monovolume();
+            cin >> *a;
+        }
+        else
+            throw 10;
+    }
+    catch (bad_alloc var)
+    {
+        cout << "Allocation Failure\n";
+        exit(EXIT_FAILURE);
+    }
+    catch(int j)
+    {
+        cout<<"Nu ati introdus un tip de automobil valid. Incercati mini, mica, compacta sau monovolum.\n ";
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+///---------------------------------------------------------------
+
+///citirea, memorarea si afisarea a n obiecte
+void memorare(Automobil** v, int n)
+{
+    v = new Automobil*[n];
+    for(int i = 0; i < n; i++)
+    {
+        tip(v[i], i);
+        cout << "\n";
+    }
+
+    //for(int i = 0; i < n; i++)
+    //  cout << *v[i] << "\n";
+
+    delete [] v;
+}
+
+
+///---------------------------------------------------------------
+
+void menu_output()
+{
+    cout<<"\nPARC AUTO\n";
+    cout<<"\n\t\tMENIU:";
+    cout<<"\n===========================================\n";
+    cout<<"\n";
+    cout<<"1. Citire informatii despre automobilele disponibile in parcul auto\n";
+    cout<<"2. Afisare informatii despre automobilele disponibile in parcul auto\n";
+    cout<<"3. Afisare informatii despre automobilele din categoria MINI disponibile in parcul auto\n";
+    cout<<"4. Afisare informatii despre automobilele din categoria MICA disponibile in parcul auto\n";
+    cout<<"5. Afisare informatii despre automobilele din categoria COMPACTA disponibile in parcul auto\n";
+    cout<<"6. Afisare informatii despre automobilele din categoria MONOVOLUME disponibile in parcul auto\n";
+    cout<<"0. Iesire.";
+    cout<<"\n";
+}
+
+///---------------------------------------------------------------
+
+
+void menu()
+{
+    int option;///optiunea aleasa din meniu
+    option=0;
+
+    int n = 0;
+    vector <Automobil*> v;
+
+    do
+    {
+        menu_output();
+        cout<<"\nIntroduceti numarul actiunii: ";
+        cin>>option;
+
+        if(option==1)
+        {
+            cout << "Introduceti numarul de automobile din parcul auto: ";
+            cin >> n;
+
+            cout << "\n";
+            if(n > 0)
+            {
+                for(int i = 0; i < n; i++)
+                {
+                    Automobil* a;
+                    tip(a, i);
+                    v.push_back(a);
+                    cout << "\n";
+                }
+
+                for(auto it:v)
+                  cout << *it;
+            }
+            else
+                cout << "Numarul introdus trebuie sa fie pozitiv.\n";
+        }
+
+        if(option == 2)
+        {
+            if(n == 0)
+                cout << "Momentan nu sunt disponibile automobile in parcul auto.\n";
+            else
+            {
+                cout << "In parcul auto sunt disponibile urmatoarele automobile:\n";
+                //for(auto it:v)
+                  //cout << *it;
+            }
+        }
+
+        if(option == 3)
+        {
+            int nr_mini = 0;
+            if(n > 0)
+                for(auto it:v)
+                {
+                    Mini* aux = dynamic_cast<Mini*>(it);
+                    if(aux)
+                    {
+                        nr_mini++;
+                        cout << *aux;
+                    }
+                }
+            else
+                cout << "Nu sunt disponibile automobile in parcul auto. Reveniti la optiunea 1.\n";
+        }
+
+        if(option == 4)
+        {
+            int nr_mica = 0;
+            if(n > 0)
+                for(auto it:v)
+                {
+                    Mica* aux = dynamic_cast<Mica*>(it);
+                    if(aux)
+                    {
+                        nr_mica++;
+                        cout << *aux;
+                    }
+                }
+            else
+                cout << "Nu sunt disponibile automobile in parcul auto. Reveniti la optiunea 1.\n";
+        }
+
+        if(option == 5)
+        {
+            int nr_compacta = 0;
+            if(n > 0)
+                for(auto it:v)
+                {
+                    Compacta* aux = dynamic_cast<Compacta*>(it);
+                    if(aux)
+                    {
+                        nr_compacta++;
+                        cout << *aux;
+                    }
+                }
+            else
+                cout << "Nu sunt disponibile automobile in parcul auto. Reveniti la optiunea 1.\n";
+        }
+
+        if(option == 6)
+        {
+            int nr_monovolume = 0;
+            if(n > 0)
+                for(auto it:v)
+                {
+                    Monovolume* aux = dynamic_cast<Monovolume*>(it);
+                    if(aux)
+                    {
+                        nr_monovolume++;
+                        cout << *aux;
+                    }
+                }
+            else
+                cout << "Nu sunt disponibile automobile in parcul auto. Reveniti la optiunea 1.\n";
+        }
+
+        if (option==0)
+        {
+            cout<<"\nEXIT\n\n";
+        }
+        if (option<0||option>5)
+        {
+            cout<<"\nSelectie invalida\n";
+        }
+        cout<<"\n";
+        system("pause"); ///Pauza - Press any key to continue...
+        system("cls");   ///Sterge continutul curent al consolei
+    }
+    while(option!=0);
+}
+
+
 int main()
 {
-    Vanzare <Mini> x;
-    cin >> x;
-    cout << x;
-
+    menu();
+    /*    Automobil** v;
+        int n = 2;
+        memorare(v, n);
+    */
 
     /* Vanzare <Mini> x;
      Mini y;
