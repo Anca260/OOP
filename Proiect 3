@@ -423,7 +423,7 @@ void Compacta::afisare(ostream& out) const
 {
     cout << "Categorie masina: COMPACTA \n";
     Masina::afisare(out);
-    cout << "Model: " << model << "\n";
+    cout << "Model: " << model << "\n\n";
 }
 void Compacta::operator =(const Compacta& m)
 {
@@ -460,9 +460,29 @@ public:
     Monovolume(const Monovolume&);
     ~Monovolume() {};
 
+    int getNrPers() const
+    {
+        return nr_pers;
+    };
     bool getStadiu() const
     {
         return stadiu;
+    };
+    int getAniVechime() const
+    {
+      return ani_vechime;
+    };
+    double getDiscount() const
+    {
+        return discount;
+    };
+    string getLuna() const
+    {
+        return luna;
+    };
+    double getPondere() const
+    {
+        return pondere;
     };
 
     void citire(istream&);
@@ -837,13 +857,18 @@ public:
         vec_vandute.clear();
     }
 
-    void sell(string s1, string s2, bool b)
+    void inserare_stoc(Monovolume ob)
+    {
+        vec_stoc.push_back(ob);
+        nr_stoc++;
+    }
+    void sell(Monovolume ob)
     {
         vector <Monovolume> vec_aux;
         int ok = 0;
         for(auto it:vec_stoc)
         {
-            if(it.getMarca() == s1 && it.getNume() == s2 && it.getStadiu() == b && ok == 0)
+            if(it == ob && ok == 0)
             {
                 vec_vandute.push_back(it);
                 nr_vandute++;
@@ -855,9 +880,19 @@ public:
         }
         vec_stoc = vec_aux;
     }
+    Monovolume cautare_stoc(int n)
+    {
+        int i = 0;
+        for(auto it:vec_stoc)
+        {
+            i++;
+            if(i == n)
+                return it;
+        }
+    }
     void operator -=(const Monovolume& m)
     {
-        sell(m.getMarca(), m.getNume(), m.getStadiu());
+        sell(m);
     }
 
     void citire(istream& in)
@@ -886,9 +921,12 @@ public:
     {
         if(nr_stoc != 0)
         {
+            int i = 0;
             out << "Monovolume in stoc:\n";
             for(auto it: vec_stoc)
             {
+                i++;
+                out << i << ") ";
                 out << it.getMarca() << " " << it.getNume();
                 if(it.getStadiu() == 0)
                     out << ", second-hand\n";
@@ -901,9 +939,12 @@ public:
 
         if(nr_vandute != 0)
         {
+            int i = 0;
             out << "Monovolume vandute:\n";
             for(auto it: vec_vandute)
             {
+                i++;
+                out << i << ") ";
                 out << it.getMarca() << " " << it.getNume();
                 if(it.getStadiu() == 0)
                     out << ", second-hand\n";
@@ -1068,6 +1109,58 @@ template<> vector<Automobil*> actualizare(vector<Automobil*> v, Compacta ob)
     return v_nou;
 }
 
+template<> vector<Automobil*> actualizare(vector<Automobil*> v, Monovolume ob)
+{
+    vector <Automobil*> v_nou;
+    int cnt = 0;
+    for(auto it:v)
+    {
+        Monovolume* aux = dynamic_cast<Monovolume*>(it);
+        if(aux)
+        {
+            if(aux -> getMarca() != ob.getMarca() || aux -> getNume() != ob.getNume() || aux -> getPret() != ob.getPret()
+               || aux -> getNrPers() != ob.getNrPers() || aux -> getAniVechime() != ob.getAniVechime() ||
+               aux -> getStadiu() != ob.getStadiu() || aux -> getDiscount() != ob.getDiscount()
+               || aux -> getLuna() != ob.getLuna() || aux -> getPondere() != ob.getPondere())
+                v_nou.push_back(it);
+            else
+            {
+                if(cnt == 0)
+                    cnt == 1;
+                else
+                    v_nou.push_back(it);
+            }
+        }
+        else
+            v_nou.push_back(it);
+    }
+    return v_nou;
+}
+
+///---------------------------------------------------------------
+/// functie pentru cumparare
+template<class T> vector<Automobil*> cumparare(vector<Automobil*> v)
+{
+    /// selectare automobile de tip 'T'
+    Vanzare<T> vec;
+    vec = selectare<T>(v);
+    cout << vec;
+    cout << "\n----------------------------------------------\n";
+
+    /// cumparare 'T'
+    cout << "Introduceti indexul automobilului pe care il cumparati: ";
+    int ind;
+    cin >> ind;
+    T ob  = vec.cautare_stoc(ind);
+    vec -=(ob);
+    cout << "----------------------------------------------\n";
+    cout << vec;
+
+    /// actualizare v dupa stergerea unei masini de tip 'T'
+    vector <Automobil*> v_nou;
+    v_nou = actualizare<T>(v, ob);
+    return v_nou;
+}
 
 
 ///---------------------------------------------------------------
@@ -1087,6 +1180,8 @@ void menu_output()
     cout << "7. Inserare automobil in parcul auto\n";
     cout << "8. Cumparare automobil, categoria MINI\n";
     cout << "9. Cumparare automobil, categoria MICA\n";
+    cout << "10. Cumparare automobil, categoria COMPACTA\n";
+    cout << "11. Cumparare automobil, categoria MONOVOLUME\n";
     cout << "0. Iesire.";
     cout << "\n";
 }
@@ -1163,7 +1258,7 @@ void menu()
                     if(aux)
                     {
                         nr_mini++;
-                        cout << *aux;
+                        cout << *aux << "\n";
                     }
                 }
             else
@@ -1180,7 +1275,7 @@ void menu()
                     if(aux)
                     {
                         nr_mica++;
-                        cout << *aux;
+                        cout << *aux << "\n";
                     }
                 }
             else
@@ -1197,7 +1292,7 @@ void menu()
                     if(aux)
                     {
                         nr_compacta++;
-                        cout << *aux;
+                        cout << *aux << "\n";
                     }
                 }
             else
@@ -1214,7 +1309,7 @@ void menu()
                     if(aux)
                     {
                         nr_monovolume++;
-                        cout << *aux;
+                        cout << *aux << "\n";
                     }
                 }
             else
@@ -1235,71 +1330,30 @@ void menu()
         }
         if(option == 8)
         {
-            /// selectare automobile de tip 'mini'
-            Vanzare<Mini> vec_mini;
-            vec_mini = selectare<Mini>(v);
-            cout << vec_mini;
-            cout << "\n----------------------------------------------\n";
-
-            /// cumparare 'mini'
-            cout << "Introduceti indexul automobilului de tip 'mini' pe care il cumparati: ";
-            int ind;
-            cin >> ind;
-            Mini ob  = vec_mini.cautare_stoc(ind);
-            vec_mini -=(ob);
-            cout << "----------------------------------------------\n";
-            cout << vec_mini;
-
-            /// actualizare v dupa stergerea unei masini de tip 'mini'
             vector <Automobil*> v_nou;
-            v_nou = actualizare<Mini>(v, ob);
+            v_nou = cumparare<Mini>(v);
             v = v_nou;
             v_nou.clear();
 
         }
         if(option == 9)
         {
-            ///selectare automobile de tip 'mica'
-            Vanzare<Mica> vec_mica;
-            vec_mica = selectare<Mica>(v);
-            cout << vec_mica;
-            cout << "\n----------------------------------------------\n";
-
-            /// cumparare 'mica'
-            cout << "Introduceti indexul automobilului de tip 'mica' pe care il cumparati: ";
-            int ind;
-            cin >> ind;
-            Mica ob  = vec_mica.cautare_stoc(ind);
-            vec_mica -=(ob);
-            cout << "----------------------------------------------\n";
-            cout << vec_mica;
-
-            /// actualizare v dupa stergerea unei masini de tip 'mica'
             vector <Automobil*> v_nou;
-            v_nou = actualizare<Mica>(v, ob);
+            v_nou = cumparare<Mica>(v);
             v = v_nou;
             v_nou.clear();
         }
         if(option == 10)
         {
-            ///selectare automobile de tip 'compacta'
-            Vanzare<Compacta> vec_compacta;
-            vec_compacta = selectare<Compacta>(v);
-            cout << vec_compacta;
-            cout << "\n----------------------------------------------\n";
-
-            /// cumparare 'mica'
-            cout << "Introduceti indexul automobilului de tip 'mica' pe care il cumparati: ";
-            int ind;
-            cin >> ind;
-            Compacta ob  = vec_compacta.cautare_stoc(ind);
-            vec_compacta -=(ob);
-            cout << "----------------------------------------------\n";
-            cout << vec_compacta;
-
-            /// actualizare v dupa stergerea unei masini de tip 'compacta'
             vector <Automobil*> v_nou;
-            v_nou = actualizare<Compacta>(v, ob);
+            v_nou = cumparare<Compacta>(v);
+            v = v_nou;
+            v_nou.clear();
+        }
+        if(option == 11)
+        {
+            vector <Automobil*> v_nou;
+            v_nou = cumparare<Monovolume>(v);
             v = v_nou;
             v_nou.clear();
         }
@@ -1309,7 +1363,7 @@ void menu()
             v.clear();
             cout<<"\nEXIT\n\n";
         }
-        if (option < 0 || option > 10)
+        if (option < 0 || option > 11)
         {
             cout << "\nSelectie invalida\n";
         }
@@ -1324,15 +1378,16 @@ void menu()
 int main()
 {
     menu();
-     //Vanzare<Compacta> v;
-     //cin >> v;
+    //Vanzare<Compacta> v;
+    //cin >> v;
 
 
     /**
 
     -> structura set pair
     -> operator == monovolume
-    -> compacta model
+    -> compacta model (rezolvare bug)
+    -> editare caz part optiuni 3-6
 
     */
     return 0;
