@@ -57,6 +57,7 @@ public:
     friend istream & operator >> (istream &, Automobil&);
     friend ostream & operator << (ostream &, const Automobil&);
     void operator =(const Automobil&);
+    bool operator ==(const Automobil&);
 };
 
 Automobil::Automobil()
@@ -116,6 +117,16 @@ void Automobil::operator =(const Automobil& a)
     nume = a.nume;
     pret = a.pret;
 }
+bool Automobil::operator ==(const Automobil& a)
+{
+    if(marca != a.marca)
+        return 0;
+    if(nume != a.nume)
+        return 0;
+    if(pret != a.pret)
+        return 0;
+    return 1;
+}
 
 
 ///-------------------------------------------------------
@@ -153,6 +164,7 @@ public:
     virtual void citire(istream&);
     virtual void afisare(ostream&) const;
     void operator =(const Masina&);
+    bool operator ==(const Masina&);
 };
 
 Masina::Masina(): Automobil()
@@ -196,6 +208,16 @@ void Masina::operator =(const Masina& c)
     Automobil::operator=(c);
     lungime = c.lungime;
     tip = c.tip;
+}
+bool Masina::operator ==(const Masina& c)
+{
+    if(Automobil::operator==(c) == 0)
+        return 0;
+    if(lungime != c.lungime)
+        return 0;
+    if(tip != c.tip)
+        return 0;
+    return 1;
 }
 
 
@@ -338,6 +360,7 @@ public:
     void citire(istream&);
     void afisare(ostream&) const;
     void operator =(const Compacta&);
+    bool operator ==(const Compacta&);
 };
 
 Compacta::Compacta(): Masina()
@@ -402,6 +425,14 @@ void Compacta::operator =(const Compacta& m)
     Compacta::operator=(m);
     model = m.model;
 };
+bool Compacta::operator ==(const Compacta& m)
+{
+    if(Compacta::operator==(m) == 0)
+        return 0;
+    if(model != m.model)
+        return 0;
+    return 1;
+};
 
 
 ///-------------------------------------------------------------
@@ -440,8 +471,8 @@ Monovolume::Monovolume(): Automobil()
     nr_pers = 0;
     ani_vechime = 0;
     discount = 0;
-    luna =
-        pondere = 0;
+    luna = "";
+    pondere = 0;
 }
 Monovolume::Monovolume(int nr_pers, string s1, string s2, double n): Automobil(s1, s2, n) ///monovolum nou
 {
@@ -659,6 +690,21 @@ public:
         stoc = a.vec_stoc.size();
         vandute = a.vec_vandute.size();
     }
+    void inserare_stoc(T ob)
+    {
+        vec_stoc.push_back(ob);
+        stoc++;
+    }
+    T cautare_stoc(int n)
+    {
+        int i = 0;
+        for(auto it:vec_stoc)
+        {
+            i++;
+            if(i == n)
+                return it;
+        }
+    }
     void citire(istream& in)
     {
         cout << "Introduceti numarul de masini in stoc: ";
@@ -685,53 +731,46 @@ public:
     {
         if(stoc != 0)
         {
-            out << "Automobile in stoc:\n";
+            int i = 0;
+            out << "In stoc:\n";
             for(auto it: vec_stoc)
-                out << it.getMarca() << " " << it.getNume() << "\n";
+            {
+                i++;
+                out << i << ") ";
+                out << it.getMarca() << " " << it.getNume() << " , " << it.getPret() << " euro, ";
+                out << it.getLungime() << " metri, " << "de " << it.getTip() << "\n";
+            }
         }
         else
-            out << "Nu sunt masini in stoc.";
+            out << "Nu sunt automobile de acest tip in stoc.";
 
         if(vandute != 0)
         {
-            out << "Automobile vandute:\n";
+            int i = 0;
+            out << "Vandute:\n";
             for(auto it: vec_vandute)
-                out << it.getMarca() << " " << it.getNume() << "\n";
+            {
+                i++;
+                out << i << ") ";
+                out << it.getMarca() << " " << it.getNume() << " , " << it.getPret() << " euro, ";
+                out << it.getLungime() << " metri, " << "de " << it.getTip() << "\n";
+            }
         }
         else
-            out << "Nu s-au vandut masini momentan.";
+            out << "Nu s-au vandut automobile de acest tip momentan.";
     }
     friend ostream& operator <<(ostream& out, const Vanzare<T> &ob)
     {
         ob.afisare(out);
         return out;
     }
-    void sell(int n)
-    {
-        int poz = 0, ok = 0;
-        vector <T> vec_aux;
-        for(auto it:vec_stoc)
-        {
-            poz++;
-            if(poz == n && ok == 0)
-            {
-                vec_vandute.push_back(it);
-                vandute++;
-                stoc--;
-                ok = 1;
-            }
-            else
-                vec_aux.push_back(it);
-        }
-        vec_stoc = vec_aux;
-    }
-    void sell(string s1, string s2)
+    void sell(T ob)
     {
         vector <T> vec_aux;
         int ok = 0;
         for(auto it:vec_stoc)
         {
-            if(it.getMarca() == s1 && it.getNume() == s2 && ok == 0)
+            if(it == ob && ok == 0)
             {
                 vec_vandute.push_back(it);
                 vandute++;
@@ -745,7 +784,7 @@ public:
     }
     void operator -=(const T& ob)
     {
-        sell(ob.getMarca(), ob.getNume());
+        sell(ob);
     }
     static void masiniStoc()
     {
@@ -946,10 +985,12 @@ void memorare(Automobil** &v, int n)
         cout << "\n";
     }
 
-    //for(int i = 0; i < n; i++)
-    //  cout << *v[i] << "\n";
+    cout << "----------------------------------------------\n";
+    cout << "Automobile disponibile:\n";
+    cout << "----------------------------------------------\n";
+    for(int i = 0; i < n; i++)
+        cout << *v[i] << "\n";
 
-    //delete [] v;
 }
 
 
@@ -957,18 +998,19 @@ void memorare(Automobil** &v, int n)
 
 void menu_output()
 {
-    cout<<"\nPARC AUTO\n";
-    cout<<"\n\t\tMENIU:";
-    cout<<"\n===========================================\n";
-    cout<<"\n";
-    cout<<"1. Citire informatii despre automobilele disponibile in parcul auto\n";
-    cout<<"2. Afisare informatii despre automobilele disponibile in parcul auto\n";
-    cout<<"3. Afisare informatii despre automobilele din categoria MINI disponibile in parcul auto\n";
-    cout<<"4. Afisare informatii despre automobilele din categoria MICA disponibile in parcul auto\n";
-    cout<<"5. Afisare informatii despre automobilele din categoria COMPACTA disponibile in parcul auto\n";
-    cout<<"6. Afisare informatii despre automobilele din categoria MONOVOLUME disponibile in parcul auto\n";
-    cout<<"0. Iesire.";
-    cout<<"\n";
+    cout << "\nPARC AUTO\n";
+    cout << "\n\t\tMENIU:";
+    cout << "\n===========================================\n";
+    cout << "\n";
+    cout << "1. Citire informatii despre automobilele disponibile in parcul auto\n";
+    cout << "2. Afisare informatii despre automobilele disponibile in parcul auto\n";
+    cout << "3. Afisare informatii despre automobilele din categoria MINI disponibile in parcul auto\n";
+    cout << "4. Afisare informatii despre automobilele din categoria MICA disponibile in parcul auto\n";
+    cout << "5. Afisare informatii despre automobilele din categoria COMPACTA disponibile in parcul auto\n";
+    cout << "6. Afisare informatii despre automobilele din categoria MONOVOLUME disponibile in parcul auto\n";
+    cout << "7. Inserare automobil in parcul auto\n";
+    cout << "0. Iesire.";
+    cout << "\n";
 }
 
 ///---------------------------------------------------------------
@@ -980,35 +1022,45 @@ void menu()
     option=0;
 
     int n = 0;
+    int ok = 0;
     vector <Automobil*> v;
 
     do
     {
         menu_output();
-        cout<<"\nIntroduceti numarul actiunii: ";
-        cin>>option;
+        cout << "\nIntroduceti numarul actiunii: ";
+        cin >> option;
 
-        if(option==1)
+        if(option == 1)
         {
-            cout << "Introduceti numarul de automobile din parcul auto: ";
-            cin >> n;
-
-            cout << "\n";
-            if(n > 0)
-            {
-                for(int i = 0; i < n; i++)
-                {
-                    Automobil* a;
-                    tip(a, i);
-                    v.push_back(a);
-                    cout << "\n";
-                }
-
-                for(auto it:v)
-                  cout << *it;
-            }
+            if(ok)
+                cout << "In parcul auto sunt disponibile automobile. Incercati optiunea 7.";
             else
-                cout << "Numarul introdus trebuie sa fie pozitiv.\n";
+            {
+                cout << "Introduceti numarul de automobile din parcul auto: ";
+                cin >> n;
+
+                cout << "\n";
+                if(n > 0)
+                {
+                    ok = 1;
+                    for(int i = 0; i < n; i++)
+                    {
+                        Automobil* a;
+                        tip(a, i);
+                        v.push_back(a);
+                        cout << "\n";
+                    }
+
+                    cout << "----------------------------------------------\n";
+                    cout << "Automobile disponibile in parcul auto:\n";
+                    cout << "----------------------------------------------\n";
+                    for(auto it:v)
+                        cout << *it << "\n";
+                }
+                else
+                    cout << "Numarul introdus trebuie sa fie pozitiv.\n";
+            }
         }
 
         if(option == 2)
@@ -1017,9 +1069,9 @@ void menu()
                 cout << "Momentan nu sunt disponibile automobile in parcul auto.\n";
             else
             {
-                cout << "In parcul auto sunt disponibile urmatoarele automobile:\n";
-                //for(auto it:v)
-                  //cout << *it;
+                cout << "In parcul auto sunt disponibile urmatoarele automobile:\n\n";
+                for(auto it:v)
+                    cout << *it << "\n";
             }
         }
 
@@ -1090,43 +1142,94 @@ void menu()
             else
                 cout << "Nu sunt disponibile automobile in parcul auto. Reveniti la optiunea 1.\n";
         }
-
-        if (option==0)
+        if(option == 7)
         {
+            Automobil* a;
+            tip(a, n);
+            n++;
+            v.push_back(a);
+
+            cout << "\n----------------------------------------------\n";
+            cout << "Automobile disponibile in parcul auto:\n";
+            cout << "----------------------------------------------\n";
+            for(auto it:v)
+                cout << *it << "\n";
+        }
+        if(option == 8)
+        {
+            Vanzare<Mini> vec_mini;
+            for(auto it:v)
+            {
+                Mini* aux = dynamic_cast<Mini*>(it);
+                if(aux)
+                    vec_mini.inserare_stoc(*aux);
+            }
+            cout << vec_mini;
+            cout << "\n----------------------------------------------\n";
+
+            cout << "Introduceti indexul automobilului mini pe care il cumparati: ";
+            int ind;
+            cin >> ind;
+            Mini ob  = vec_mini.cautare_stoc(ind);
+            vec_mini -=(ob);
+
+            cout << "----------------------------------------------\n";
+            cout << vec_mini;
+
+
+            /// actualizarea lui v dupa stergerea unei masini
+            vector <Automobil*> v_nou;
+            int cnt = 0;
+            for(auto it:v)
+            {
+                Mini* aux = dynamic_cast<Mini*>(it);
+                if(aux)
+                {
+                    if(aux -> getMarca() != ob.getMarca() || aux -> getNume() != ob.getNume() || aux -> getPret() != ob.getPret()
+                            || aux -> getLungime() != ob.getLungime() || aux -> getTip() != ob.getTip())
+                        v_nou.push_back(it);
+                    else
+                    {
+                        if(cnt == 0)
+                            cnt == 1;
+                        else
+                            v_nou.push_back(it);
+                    }
+                }
+            }
+            v = v_nou;
+            v_nou.clear();
+        }
+
+        if (option == 0)
+        {
+            v.clear();
             cout<<"\nEXIT\n\n";
         }
-        if (option<0||option>5)
+        if (option < 0 || option > 8)
         {
-            cout<<"\nSelectie invalida\n";
+            cout << "\nSelectie invalida\n";
         }
-        cout<<"\n";
+        cout << "\n";
         system("pause"); ///Pauza - Press any key to continue...
         system("cls");   ///Sterge continutul curent al consolei
     }
-    while(option!=0);
+    while(option != 0);
 }
 
 
 int main()
 {
     menu();
-    /*    Automobil** v;
-        int n = 2;
-        memorare(v, n);
+    // Vanzare<Mini> v;
+
+    /**
+
+    -> structura set pair
+    -> operator == monovolume
+    -> compacta model
+
     */
-
-    /* Vanzare <Mini> x;
-     Mini y;
-     cin>>x;
-     cout<<x;
-     cout<<"\n--------------------\n";
-     cin >> y;
-     cout << y;
-     cout<<"\n--------------------\n";
-     x -= y;
-     cout<<x;*/
-
-
     return 0;
 }
 
