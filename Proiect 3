@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
+#include <utility>
 
 using namespace std;
 
@@ -1167,6 +1169,45 @@ template<class T> vector<Automobil*> cumparare(vector<Automobil*> v, Vanzare<T> 
 
 }
 
+///--------------------------------------------------------------
+
+void istoric(Automobil* it, pair<Automobil*, bool> pereche, set<pair<Automobil*, bool>>& structura)
+{
+    Mini* aux1 = dynamic_cast<Mini*>(it);
+    Mica* aux2 = dynamic_cast<Mica*>(it);
+    Compacta* aux3 = dynamic_cast<Compacta*>(it);
+    Monovolume* aux4 = dynamic_cast<Monovolume*>(it);
+
+    if(aux1)
+    {
+        pereche.first = aux1;
+        pereche.second = 1;
+        structura.insert(pereche);
+    }
+    else if(aux2)
+    {
+        pereche.first = aux2;
+        pereche.second = 1;
+        structura.insert(pereche);
+    }
+    else if(aux3)
+    {
+        pereche.first = aux3;
+        pereche.second = 1;
+        structura.insert(pereche);
+    }
+    else if(aux4)
+    {
+        pereche.first = aux4;
+        if(aux4->getStadiu() == 1)
+            pereche.second = 1;
+        else
+            pereche.second = 0;
+        structura.insert(pereche);
+    }
+}
+
+
 
 ///---------------------------------------------------------------
 
@@ -1187,6 +1228,7 @@ void menu_output()
     cout << "9. Cumparare automobil, categoria MICA\n";
     cout << "10. Cumparare automobil, categoria COMPACTA\n";
     cout << "11. Cumparare automobil, categoria MONOVOLUME\n";
+    cout << "12. Istoric parc auto\n";
     cout << "0. Iesire.";
     cout << "\n";
 }
@@ -1202,6 +1244,8 @@ void menu()
     int n = 0;
     int ok = 0;
     vector <Automobil*> v;
+    pair<Automobil*, bool> pereche;
+    set<pair<Automobil*, bool>> structura;
 
     do
     {
@@ -1227,6 +1271,7 @@ void menu()
                         Automobil* a;
                         tip(a, i);
                         v.push_back(a);
+                        istoric(a, pereche, structura);
                         cout << "\n";
                     }
 
@@ -1343,6 +1388,7 @@ void menu()
             tip(a, n);
             n++;
             v.push_back(a);
+            istoric(a, pereche, structura);
 
             cout << "\n----------------------------------------------\n";
             cout << "Automobile disponibile in parcul auto:\n";
@@ -1411,13 +1457,19 @@ void menu()
                 v_nou.clear();
             }
         }
+        if(option == 12)
+        {
+            for(auto it:structura)
+                cout << *it.first << "\n";
+        }
 
         if (option == 0)
         {
             v.clear();
+            structura.clear();
             cout<<"\nEXIT\n\n";
         }
-        if (option < 0 || option > 11)
+        if (option < 0 || option > 12)
         {
             cout << "\nSelectie invalida\n";
         }
@@ -1433,15 +1485,6 @@ int main()
 {
     menu();
 
-
-    /**
-
-    -> structura set pair
-    -> operator == monovolume
-    -> compacta model (rezolvare bug)
-    -> editare caz part optiuni 3-6
-
-    */
     return 0;
 }
 
